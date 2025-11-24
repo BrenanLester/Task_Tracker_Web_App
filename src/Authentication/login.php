@@ -1,5 +1,5 @@
 <?php
-require 'db.php';
+require __DIR__ . '/../Database/db.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user["password_hash"])) {
+        if ($user && password_verify($password, $user["password"])) {
             $_SESSION["user_id"] = $user["user_id"];
             $_SESSION["name"] = $user["name"];
             header("Location: dashboard.php");
@@ -69,4 +69,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </div>
 </body>
+<link rel="stylesheet" href="style.css">
 </html>

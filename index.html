@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker - Welcome</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        a {
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        .btn-login {
+            background: #007bff;
+            color: white;
+        }
+        .btn-login:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+        .btn-register {
+            background: #28a745;
+            color: white;
+        }
+        .btn-register:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📋 Task Tracker</h1>
+    <p>Organize your tasks, set reminders, and manage your time efficiently</p>
+    <div class="buttons">
+        <a href="src/Authentication/login.php" class="btn-login">Login</a>
+        <a href="src/Authentication/register.php" class="btn-register">Register</a>
+    </div>
+</div>
+</body>
+</html>

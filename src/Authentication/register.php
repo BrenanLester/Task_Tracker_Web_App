@@ -1,5 +1,5 @@
 <?php
-require 'db.php';
+require __DIR__ . '/../Database.db.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Email already registered.";
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
             $stmt->execute([$name, $email, $hash]);
             header("Location: login.php?registered=true");
             exit;
