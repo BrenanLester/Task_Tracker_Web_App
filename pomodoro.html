@@ -39,3 +39,52 @@
 
     <a class="menu-item" href="#"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>
+<div class="main">
+    <h1 class="page-title">Pomodoro Timer</h1>
+    <p class="subtitle">Stay focused with the Pomodoro Technique</p>
+
+    <div class="pomo-card">
+        <h2>Timer</h2>
+
+        <!-- Modes -->
+        <div class="pomo-modes">
+            <button class="mode-btn active" onclick="setMode('work', 25)">
+                <i class="bi bi-clock"></i> Work (25m)
+            </button>
+            <button class="mode-btn" onclick="setMode('short', 5)">
+                <i class="bi bi-cup-hot"></i> Short Break (5m)
+            </button>
+            <button class="mode-btn" onclick="setMode('long', 15)">
+                <i class="bi bi-hourglass"></i> Long Break (15m)
+            </button>
+        </div>
+
+        <!-- Timer Display -->
+        <div class="timer-display" id="timeDisplay">25:00</div>
+
+        <p class="focus-label" id="sessionLabel">Focus Time</p>
+
+        <!-- Buttons -->
+        <div class="pomo-controls">
+            <button class="start-btn" id="startBtn">
+                <i class="bi bi-play-fill"></i> Start
+            </button>
+            <button class="reset-btn" id="resetBtn">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- Background music -->
+    <audio id="bgMusic" loop>
+        <source src="https://files.catbox.moe/9k89ye.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Alarm sound -->
+    <audio id="alarmSound">
+        <source src="https://files.catbox.moe/ojr5ha.mp3" type="audio/mp3">
+    </audio>
+</div>
+<script src="pomodoro.js"></script>
+</body>
+</html>
