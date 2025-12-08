@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     user_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
+    subject TEXT,
+    quadrant TEXT CHECK(quadrant IN ('urgent-important','important','urgent','others')) DEFAULT 'others',
     priority TEXT CHECK(priority IN ('Low','Medium','High')) DEFAULT 'Medium',
     status TEXT CHECK(status IN ('Pending','In progress', 'Completed')) DEFAULT 'Pending',
     due_date DATETIME,

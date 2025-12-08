@@ -69,9 +69,9 @@ $calendar_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </a>
 
     <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> Profile</a>
-    <a class="menu-item" href="#"><i class="bi bi-stopwatch"></i> Pomodoro Timer</a>
-    <a class="menu-item" href="#"><i class="bi bi-gear-fill"></i> Settings</a>
-    <a class="menu-item" href="#"><i class="bi bi-info-circle"></i> About Us</a>
+    <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> Pomodoro Timer</a>
+    <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> Settings</a>
+    <a class="menu-item" href="../About/about.php"><i class="bi bi-info-circle"></i> About Us</a>
 
     <a class="menu-item" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
 </div>
@@ -173,5 +173,7 @@ $calendar_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
     });
   </script>
 
-</body>
-</html>
+    <script src="../Shared/audioPlayer.js"></script>
+
+  </body>
+  </html>

@@ -25,10 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!$name || !$email) {
                 $error = "All fields are required.";
             } else {
-                // Check if email is already taken by another user
-                $check = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
-                $check->execute([$email, $user_id]);
-                if ($check->fetch()) {
+                     // Check if email is already taken by another user
+                     $check = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
+                     $check->execute([$email, $user_id]);
+                     if ($check->fetch()) {
                     $error = "This email is already taken by another user.";
                 } else {
                     $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE user_id = ?");
@@ -356,9 +356,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <a class="menu-item" href="Dashboard/dashboard.php"><i class="bi bi-speedometer2"></i> <span class="text">Dashboard</span></a>
     <a class="menu-item" href="Tasks/tasks.php"><i class="bi bi-list-check"></i> <span class="text">Tasks</span></a>
     <a class="menu-item active" href="profile.php"><i class="bi bi-person-circle"></i> <span class="text">Profile</span></a>
-    <a class="menu-item" href="#"><i class="bi bi-stopwatch"></i> <span class="text">Pomodoro Timer</span></a>
-    <a class="menu-item" href="#"><i class="bi bi-gear-fill"></i> <span class="text">Settings</span></a>
-    <a class="menu-item" href="#"><i class="bi bi-info-circle"></i> <span class="text">About Us</span></a>
+    <a class="menu-item" href="Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="text">Pomodoro Timer</span></a>
+    <a class="menu-item" href="Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="text">Settings</span></a>
+    <a class="menu-item" href="About/about.php"><i class="bi bi-info-circle"></i> <span class="text">About Us</span></a>
 
     <div class="mt-auto pt-3">
       <a class="menu-item" href="logout.php"><i class="bi bi-box-arrow-right"></i> <span class="text">Logout</span></a>
@@ -492,6 +492,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         confirmBox.classList.toggle('show');
     }
   </script>
+</body>
+</html>
+
+<script src="Shared/audioPlayer.js"></script>
 
 </body>
 </html>

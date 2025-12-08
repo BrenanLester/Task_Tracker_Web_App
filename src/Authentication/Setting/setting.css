@@ -1,0 +1,152 @@
+body {
+  background-color: #f6f2fc;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #3b1366; 
+  min-height: 100vh;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 20px;
+}
+
+.sidebar h5 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* Menu items */
+.menu-item {
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.2s ease;
+  color: #e7dfff;
+  text-decoration: none;
+}
+
+.menu-item i {
+  font-size: 20px;
+}
+
+.menu-item.active {
+  background-color:  #6d28d9 ;
+  color: #fff;
+}
+
+/* Hover */
+.menu-item:hover {
+  background-color: #7626db;
+  color: white;
+}
+
+.sidebar .menu-item:last-child {
+  margin-top: auto;
+}
+
+/* ===== MAIN CONTENT ===== */
+.content {
+  margin-left: 260px;
+  padding: 40px;
+  color: #4b3b63;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #3b1366;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #7b6f92;
+    margin-bottom: 30px;
+}
+
+.settings-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+}
+
+.settings-card h2 {
+    color: #3b1366;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ddff;
+}
+
+.settings-card h2:first-child {
+    margin-top: 0;
+}
+
+.setting-item {
+    margin-bottom: 25px;
+}
+
+.setting-item label {
+    display: block;
+    color: #5e3aac;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.setting-item .form-select,
+.setting-item .form-control {
+    border: 1px solid #d8cfff;
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #4b3b63;
+}
+
+.setting-item .form-select:focus,
+.setting-item .form-control:focus {
+    border-color: #8b32ff;
+    box-shadow: 0 0 0 0.2rem rgba(139, 50, 255, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: #8b32ff;
+    border-color: #8b32ff;
+}
+
+.save-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ddff;
+}
+
+.btn-save {
+    padding: 12px 30px;
+    background: #8b32ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.btn-save:hover {
+    background: #7626db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 50, 255, 0.3);
+}

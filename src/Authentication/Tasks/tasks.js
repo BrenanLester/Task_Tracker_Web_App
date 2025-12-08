@@ -1,222 +1,317 @@
-/**
- * Tasks Frontend Logic
- * Communicates with CRUD API (src/CRUD/Task.php)
- */
-
-const API_URL = '/Task_Tracker_Web_App/src/CRUD/Task.php';
 let currentQuadrant = null;
+let editingTaskId = null;
+let taskIdCounter = 0;
 
-// Load tasks on page load
-document.addEventListener('DOMContentLoaded', function () {
-    loadTasks();
+// Quadrant name mapping
+const quadrantNames = {
+  'urgent-important': 'Important & Urgent',
+  'important': 'Important but Not Urgent',
+  'urgent': 'Not Important but Urgent',
+  'others': 'Not Important & Not Urgent'
+};
 
-    // Handle Enter key in modal
-    const taskInput = document.getElementById('task-input');
-    if (taskInput) {
-        taskInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                addTask();
-            }
-        });
+function openModal(quad) {
+  currentQuadrant = quad;
+  editingTaskId = null;
+
+  const modal = document.getElementById("modal");
+  modal.classList.add('show');
+
+  // Reset form for new task
+  document.getElementById('modal-title').textContent = 'Add New Task';
+  document.getElementById('modal-subtitle').textContent = 'Create a new task in the Eisenhower Matrix';
+  document.getElementById('submit-btn').textContent = 'Add Task';
+
+  // Set the quadrant dropdown to match the clicked quadrant
+  const quadrantBtn = document.getElementById('selected-quadrant');
+  quadrantBtn.textContent = quadrantNames[quad];
+
+  // Update active state in dropdown
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // Find and activate the correct dropdown item
+  dropdownItems.forEach(item => {
+    if (item.querySelector('span').textContent === quadrantNames[quad]) {
+      item.classList.add('active');
     }
+  });
+
+  // Focus on the task title input
+  setTimeout(() => {
+    document.getElementById('task-title').focus();
+  }, 100);
+}
+
+function closeModal() {
+  const modal = document.getElementById("modal");
+  modal.classList.remove('show');
+
+  // Reset form
+  document.getElementById("task-title").value = "";
+  document.getElementById("task-description").value = "";
+  document.getElementById("task-subject").value = "";
+  editingTaskId = null;
+
+  // Close dropdown if open
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  const dropdownBtn = document.getElementById('quadrant-btn');
+  dropdownMenu.classList.remove('show');
+  dropdownBtn.classList.remove('open');
+}
+
+function toggleDropdown() {
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  const dropdownBtn = document.getElementById('quadrant-btn');
+
+  dropdownMenu.classList.toggle('show');
+  dropdownBtn.classList.toggle('open');
+}
+
+function selectQuadrant(quadrantId, quadrantName, element) {
+  // Update current quadrant
+  currentQuadrant = quadrantId;
+
+  // Update button text
+  document.getElementById('selected-quadrant').textContent = quadrantName;
+
+  // Update active state - remove from all
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // Add active to clicked item
+  element.classList.add('active');
+
+  // Close dropdown
+  toggleDropdown();
+}
+
+function saveTask(event) {
+  event.preventDefault();
+
+  if (editingTaskId) {
+    updateTask();
+  } else {
+    addTask();
+  }
+}
+
+function addTask() {
+  const taskTitle = document.getElementById("task-title").value.trim();
+  const taskDescription = document.getElementById("task-description").value.trim();
+  const taskSubject = document.getElementById("task-subject").value.trim();
+
+  if (taskTitle === "") {
+    alert("Please enter a task title");
+    return;
+  }
+
+  const list = document.getElementById(currentQuadrant);
+
+  // Remove "no tasks" message if it exists
+  const noTasksMsg = list.querySelector('.no-tasks');
+  if (noTasksMsg) {
+    noTasksMsg.remove();
+  }
+
+  // Create unique task ID
+  taskIdCounter++;
+  const taskId = `task-${taskIdCounter}`;
+
+  // Create task element
+  const task = document.createElement("div");
+  task.className = "task";
+  task.id = taskId;
+  task.dataset.title = taskTitle;
+  task.dataset.description = taskDescription;
+  task.dataset.subject = taskSubject;
+  task.dataset.quadrant = currentQuadrant;
+  task.dataset.completed = "false";
+
+  task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
+  list.appendChild(task);
+
+  closeModal();
+  showNotification("Task added successfully");
+}
+
+function createTaskHTML(taskId, title, description, subject, completed) {
+  let html = '<div class="task-header">';
+  html += '<div class="task-content">';
+  html += `<div class="task-title ${completed ? 'completed' : ''}">${title}</div>`;
+
+  if (description) {
+    html += `<div class="task-description">${description}</div>`;
+  }
+
+  html += '</div>';
+  html += '<div class="task-actions">';
+  html += `<button class="task-action-btn check" onclick="toggleComplete('${taskId}')" title="Mark as complete"><i class="bi bi-check-lg"></i></button>`;
+  html += `<button class="task-action-btn edit" onclick="editTask('${taskId}')" title="Edit task"><i class="bi bi-pencil"></i></button>`;
+  html += `<button class="task-action-btn delete" onclick="deleteTask('${taskId}')" title="Delete task"><i class="bi bi-trash"></i></button>`;
+  html += '</div>';
+  html += '</div>';
+
+  return html;
+}
+
+function toggleComplete(taskId) {
+  const task = document.getElementById(taskId);
+  const isCompleted = task.dataset.completed === "true";
+
+  task.dataset.completed = !isCompleted;
+
+  const titleElement = task.querySelector('.task-title');
+  if (!isCompleted) {
+    titleElement.classList.add('completed');
+  } else {
+    titleElement.classList.remove('completed');
+  }
+}
+
+function editTask(taskId) {
+  const task = document.getElementById(taskId);
+  editingTaskId = taskId;
+  currentQuadrant = task.dataset.quadrant;
+
+  // Populate form with existing data
+  document.getElementById('task-title').value = task.dataset.title;
+  document.getElementById('task-description').value = task.dataset.description;
+  document.getElementById('task-subject').value = task.dataset.subject;
+
+  // Update modal UI for editing
+  document.getElementById('modal-title').textContent = 'Edit Task';
+  document.getElementById('modal-subtitle').textContent = 'Update task details';
+  document.getElementById('submit-btn').textContent = 'Update Task';
+
+  // Set quadrant dropdown
+  const quadrantBtn = document.getElementById('selected-quadrant');
+  quadrantBtn.textContent = quadrantNames[currentQuadrant];
+
+  // Update active state in dropdown
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach(item => {
+    item.classList.remove('active');
+    if (item.querySelector('span').textContent === quadrantNames[currentQuadrant]) {
+      item.classList.add('active');
+    }
+  });
+
+  // Open modal
+  const modal = document.getElementById("modal");
+  modal.classList.add('show');
+
+  setTimeout(() => {
+    document.getElementById('task-title').focus();
+  }, 100);
+}
+
+function updateTask() {
+  const taskTitle = document.getElementById("task-title").value.trim();
+  const taskDescription = document.getElementById("task-description").value.trim();
+  const taskSubject = document.getElementById("task-subject").value.trim();
+
+  if (taskTitle === "") {
+    alert("Please enter a task title");
+    return;
+  }
+
+  const task = document.getElementById(editingTaskId);
+  const oldQuadrant = task.dataset.quadrant;
+  const completed = task.dataset.completed === "true";
+
+  // Update task data
+  task.dataset.title = taskTitle;
+  task.dataset.description = taskDescription;
+  task.dataset.subject = taskSubject;
+  task.dataset.quadrant = currentQuadrant;
+
+  // If quadrant changed, move task
+  if (oldQuadrant !== currentQuadrant) {
+    const newList = document.getElementById(currentQuadrant);
+
+    // Remove "no tasks" message if exists
+    const noTasksMsg = newList.querySelector('.no-tasks');
+    if (noTasksMsg) {
+      noTasksMsg.remove();
+    }
+
+    newList.appendChild(task);
+
+    // Check if old quadrant is now empty
+    const oldList = document.getElementById(oldQuadrant);
+    if (oldList.children.length === 0) {
+      oldList.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
+    }
+  }
+
+  // Update task HTML
+  task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
+
+  closeModal();
+  showNotification("Task updated successfully");
+}
+
+function deleteTask(taskId) {
+  if (!confirm("Are you sure you want to delete this task?")) {
+    return;
+  }
+
+  const task = document.getElementById(taskId);
+  const quadrant = task.dataset.quadrant;
+
+  task.remove();
+
+  // Check if quadrant is now empty
+  const list = document.getElementById(quadrant);
+  if (list.children.length === 0) {
+    list.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
+  }
+
+  showNotification("Task deleted");
+}
+
+function showNotification(message) {
+  const notification = document.getElementById('notification');
+  const notificationText = document.getElementById('notification-text');
+
+  notificationText.textContent = message;
+  notification.classList.add('show');
+
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, 3000);
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function (event) {
+  const dropdownWrapper = document.querySelector('.dropdown-wrapper');
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  const dropdownBtn = document.getElementById('quadrant-btn');
+
+  if (dropdownWrapper && !dropdownWrapper.contains(event.target)) {
+    dropdownMenu.classList.remove('show');
+    dropdownBtn.classList.remove('open');
+  }
 });
 
-// Load all tasks from API
-function loadTasks() {
-    fetch(`${API_URL}?action=grouped`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Clear all quadrants
-                ['urgent-important', 'important', 'urgent', 'others'].forEach(quadrant => {
-                    document.getElementById(quadrant).innerHTML = '';
-                });
+// Close modal when clicking outside
+document.getElementById('modal').addEventListener('click', function (event) {
+  if (event.target === this) {
+    closeModal();
+  }
+});
 
-                // Populate each quadrant
-                const tasks = data.tasks;
-                for (const quadrant in tasks) {
-                    tasks[quadrant].forEach(task => {
-                        renderTask(quadrant, task);
-                    });
-                }
-            } else {
-                console.error('Failed to load tasks:', data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading tasks:', error);
-        });
-}
-
-// Render a task in the DOM
-function renderTask(quadrant, task) {
-    const list = document.getElementById(quadrant);
-    const taskElement = document.createElement('div');
-    taskElement.className = 'task';
-    if (task.status === 'Completed') {
-        taskElement.classList.add('completed');
+// Close modal with Escape key
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape') {
+    const modal = document.getElementById('modal');
+    if (modal.classList.contains('show')) {
+      closeModal();
     }
-    taskElement.setAttribute('data-id', task.task_id);
-    taskElement.innerHTML = `
-        <input type="checkbox" class="task-checkbox" 
-               ${task.status === 'Completed' ? 'checked' : ''} 
-               onchange="toggleComplete(${task.task_id}, this.checked)">
-        <span class="task-title">${escapeHtml(task.title)}</span>
-        <button class="delete-btn" onclick="deleteTask(${task.task_id})">×</button>
-    `;
-    list.appendChild(taskElement);
-}
-
-// Toggle task completion
-function toggleComplete(taskId, isCompleted) {
-    const formData = new URLSearchParams();
-    formData.append('action', 'update');
-    formData.append('id', taskId);
-    formData.append('status', isCompleted ? 'Completed' : 'Pending');
-
-    // Get current task data to preserve other fields
-    fetch(`${API_URL}?action=read&id=${taskId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const task = data.task;
-                formData.append('title', task.title);
-                formData.append('description', task.description || '');
-                formData.append('priority', task.priority || 'Medium');
-                formData.append('due_date', task.due_date || '');
-                formData.append('quadrant', task.quadrant || 'others');
-
-                return fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: formData
-                });
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update UI
-                const taskElement = document.querySelector(`[data-id="${taskId}"]`);
-                if (taskElement) {
-                    if (isCompleted) {
-                        taskElement.classList.add('completed');
-                    } else {
-                        taskElement.classList.remove('completed');
-                    }
-                }
-            } else {
-                alert('Error updating task: ' + (data.message || 'Unknown error'));
-                // Revert checkbox
-                const checkbox = document.querySelector(`[data-id="${taskId}"] .task-checkbox`);
-                if (checkbox) checkbox.checked = !isCompleted;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to update task');
-            // Revert checkbox
-            const checkbox = document.querySelector(`[data-id="${taskId}"] .task-checkbox`);
-            if (checkbox) checkbox.checked = !isCompleted;
-        });
-}
-
-// Open add task modal
-function openModal(quadrant) {
-    currentQuadrant = quadrant;
-    document.getElementById('modal').style.display = 'flex';
-    document.getElementById('task-input').focus();
-}
-
-// Close modal
-function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-    document.getElementById('task-input').value = '';
-    currentQuadrant = null;
-}
-
-// Add new task
-function addTask() {
-    const taskName = document.getElementById('task-input').value.trim();
-    if (taskName === '') return;
-
-    const formData = new URLSearchParams();
-    formData.append('action', 'create');
-    formData.append('title', taskName);
-    formData.append('quadrant', currentQuadrant);
-
-    console.log('Sending to:', API_URL);
-    console.log('Data:', formData.toString());
-
-    fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
-    })
-        .then(response => {
-            console.log('Status:', response.status);
-            return response.text();
-        })
-        .then(text => {
-            console.log('Response:', text);
-            const data = JSON.parse(text);
-            if (data.success) {
-                const task = {
-                    task_id: data.id,
-                    title: taskName,
-                    quadrant: currentQuadrant
-                };
-                renderTask(currentQuadrant, task);
-                closeModal();
-            } else {
-                alert('Error: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to add task: ' + error.message);
-        });
-}
-
-// Delete task
-function deleteTask(taskId) {
-    if (!confirm('Delete this task?')) return;
-
-    const formData = new URLSearchParams();
-    formData.append('action', 'delete');
-    formData.append('id', taskId);
-
-    fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const taskElement = document.querySelector(`[data-id="${taskId}"]`);
-                if (taskElement) {
-                    taskElement.remove();
-                }
-            } else {
-                alert('Error deleting: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to delete task');
-        });
-}
-
-// Helper function to escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+  }
+});
