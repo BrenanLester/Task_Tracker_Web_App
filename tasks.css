@@ -14,24 +14,25 @@ body {
   left: 0;
   display: flex;
   flex-direction: column;
-  padding: 25px 20px;
+  padding: 20px 15px;
 }
 
 .sidebar h5 {
-  font-size: 22px;
+  font-size: 20px; 
   font-weight: 700;
-  margin-bottom: 30px;
+  margin-bottom: 25px; 
 }
 
 /* Menu items */
 .menu-item {
-  padding: 12px 18px;
-  border-radius: 10px;
-  margin-bottom: 8px;
+ 
+  padding: 8px 15px; 
+  border-radius: 50px; 
+  margin-bottom: 5px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 15px;
+  gap: 10px; 
+  font-size: 14px; 
   font-weight: 500;
   transition: 0.2s ease;
   color: #e7dfff;
@@ -39,12 +40,11 @@ body {
 }
 
 .menu-item i {
-  font-size: 20px;
+  font-size: 18px; 
 }
 
-/* Active style (exact dashboard color) */
 .menu-item.active {
-  background-color:  #6d28d9 ;
+  background-color:  #6d28d9 ; 
   color: #fff;
 }
 
@@ -57,7 +57,7 @@ body {
 .sidebar .menu-item:last-child {
   margin-top: auto;
 }
-
+    
 /* ======= MAIN ======= */
 .main {
   margin-left: 260px; /* THIS FIXES THE OVERLAP */

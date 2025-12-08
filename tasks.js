@@ -41,3 +41,18 @@ function addTask() {
 }
 
 document.addEventListener("DOMContentLoaded", updateNoTaskMessage);
+
+
+
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menu-toggle');
+const content = document.getElementById('content');
+
+if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('sidebar-open'); 
+        
+        content.classList.toggle('content-pushed');
+     
+    });
+}
