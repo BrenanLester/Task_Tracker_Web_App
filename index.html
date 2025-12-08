@@ -1,78 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Tracker - Welcome</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 50px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-width: 500px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-        .buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-        a {
-            padding: 12px 30px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-        .btn-login {
-            background: #007bff;
-            color: white;
-        }
-        .btn-login:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
-        }
-        .btn-register {
-            background: #28a745;
-            color: white;
-        }
-        .btn-register:hover {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
-        }
-    </style>
+    <title>DebugMyDay — Login / Registration</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="container">
-    <h1>📋 Task Tracker</h1>
-    <p>Organize your tasks, set reminders, and manage your time efficiently</p>
-    <div class="buttons">
-        <a href="src/Authentication/login.php" class="btn-login">Login</a>
-        <a href="src/Authentication/register.php" class="btn-register">Register</a>
+
+    <div class="container">
+        <div class="form-box login">
+            <form id="loginForm" action="src/Authentication/login.php" method="POST">
+                <h1>Login</h1>
+                <div class="input-box">
+                    <input id="login-email" name="email" type="email" placeholder="Email" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    <input id="login-password" name="password" type="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <div class="forgot-link">
+                    <a href="#">Forgot password?</a>
+                </div>
+                <button id="loginBtn" type="submit" class="btn">Login</button>
+                <p class="form-note">or login with social platforms</p>
+                <div class="social-icons">
+                    <a href="https://accounts.google.com/" target="_blank">
+                        <i class='bx bxl-google'></i>
+                    </a>
+                    <a href="https://www.facebook.com/login.php" target="_blank">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="https://github.com/login" target="_blank">
+                        <i class='bx bxl-github'></i>
+                    </a>
+                    <a href="https://www.linkedin.com/login" target="_blank">
+                        <i class='bx bxl-linkedin'></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-box register">
+            <form id="registerForm" action="src/Authentication/register.php" method="POST">
+                <h1>Registration</h1>
+                <div class="input-box">
+                    <input id="reg-name" name="name" type="text" placeholder="Username" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    <input id="reg-email" name="email" type="email" placeholder="Email" required>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+                <div class="input-box">
+                    <input id="reg-password" type="password" placeholder="Password" required>
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <button id="regBtn" type="submit" class="btn">Register</button>
+                <p class="form-note">or register with social platforms</p>
+                <div class="social-icons">
+                    <a href="https://accounts.google.com/" target="_blank">
+                        <i class='bx bxl-google'></i>
+                    </a>
+                    <a href="https://www.facebook.com/login.php" target="_blank">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="https://github.com/login" target="_blank">
+                        <i class='bx bxl-github'></i>
+                    </a>
+                    <a href="https://www.linkedin.com/login" target="_blank">
+                        <i class='bx bxl-linkedin'></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="toggle-box">
+            <div class="toggle-panel toggle-left">
+                <h1>Hello, Welcome!</h1>
+                <p>Don't have an account?</p>
+                <button class="btn register-btn">Register</button>
+            </div>
+            <div class="toggle-panel toggle-right">
+                <h1>Welcome Back!</h1>
+                <p>Already have an account?</p>
+                <button class="btn login-btn">Login</button>
+            </div>
+        </div>
     </div>
-</div>
+
+    <script src="script.js"></script>
+    <script>
+        // Display error message if present in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            const loginForm = document.getElementById('loginForm');
+            const errorDiv = document.createElement('p');
+            errorDiv.style.color = 'red';
+            errorDiv.style.marginBottom = '10px';
+            errorDiv.style.textAlign = 'center';
+            errorDiv.textContent = error;
+            loginForm.insertBefore(errorDiv, loginForm.firstChild.nextSibling);
+
+            // Remove error from URL without reloading
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
 </body>
+
 </html>

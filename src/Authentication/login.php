@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/../Database/db.php';
 session_start();
 
@@ -7,9 +8,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim($_POST["password"]);
 
     if (!$email || !$password) {
-        $error = "Email and password are required.";
+        header("Location: ../../index.html?error=" . urlencode("Email and password are required"));
+        exit;
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Please enter a valid email address.";
+        header("Location: ../../index.html?error=" . urlencode("Please enter a valid email address"));
+        exit;
     } else {
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
@@ -18,10 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($user && password_verify($password, $user["password"])) {
             $_SESSION["user_id"] = $user["user_id"];
             $_SESSION["name"] = $user["name"];
-            header("Location: dashboard.php");
+            header("Location: Dashboard/dashboard.php");
             exit;
         } else {
-            $error = "Invalid email or password.";
+            header("Location: ../../index.html?error=" . urlencode("Invalid email or password"));
+            exit;
         }
     }
 }
@@ -32,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Task Tracker</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; }
         .login-form { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
@@ -69,5 +72,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </div>
 </body>
-<link rel="stylesheet" href="style.css">
 </html>

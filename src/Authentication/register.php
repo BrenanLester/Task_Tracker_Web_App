@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../Database.db.php';
+require __DIR__ . '/../Database/db.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -32,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Task Tracker</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; }
         .register-form { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
