@@ -73,10 +73,10 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
 
         <!-- Buttons -->
         <div class="pomo-controls">
-            <button class="start-btn" id="startBtn">
+            <button type="button" class="start-btn" id="startBtn">
                 <i class="bi bi-play-fill"></i> Start
             </button>
-            <button class="reset-btn" id="resetBtn">
+            <button type="button" class="reset-btn" id="resetBtn">
                 <i class="bi bi-arrow-counterclockwise"></i> Reset
             </button>
         </div>

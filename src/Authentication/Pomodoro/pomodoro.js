@@ -6,12 +6,11 @@ let musicPlaying = false;
 
 const display = document.getElementById("timeDisplay");
 const sessionLabel = document.getElementById("sessionLabel");
-const bgMusicLocal = document.getElementById("bgMusic"); // fallback local audio element
 const alarm = document.getElementById("alarmSound");
 const musicSelect = document.getElementById("bgMusicSelect");
 
 function getBg() {
-    return (window.getGlobalAudio && window.getGlobalAudio()) || bgMusicLocal;
+    return (window.getGlobalAudio && window.getGlobalAudio()) || null;
 }
 
 // Restore saved state: endTime, paused, remaining, selected music, and playback
@@ -122,9 +121,16 @@ document.getElementById("startBtn").onclick = () => {
         localStorage.setItem('remaining', timeLeft);
         musicPlaying = false;
         localStorage.setItem('musicPlaying', 'false');
+        // Remove endTime so other pages don't auto-resume the timer
+        localStorage.removeItem('endTime');
 
-        const player = getBg();
-        if (player) player.pause();
+        // Pause global audio (host or in-page)
+        if (window.pauseGlobalAudio) {
+            try { window.pauseGlobalAudio(); } catch (e) {}
+        } else {
+            const player = getBg();
+            if (player) player.pause();
+        }
     } else {
         // Start or resume
         running = true;
@@ -135,32 +141,52 @@ document.getElementById("startBtn").onclick = () => {
         localStorage.setItem('endTime', endTime);
         musicPlaying = true;
         localStorage.setItem('musicPlaying', 'true');
-
-            applySelectedMusic();
-            // Try to open persistent audio host popup. If it fails, fallback to in-page player.
-            if (window.openAudioHost) {
-                window.openAudioHost({ file: musicSelect.value, time: parseFloat(localStorage.getItem('musicCurrentTime')) || 0, play: true });
-            } else {
-                const player = getBg();
-                if (player) {
-                    const pos = parseFloat(localStorage.getItem('musicCurrentTime')) || 0;
-                    try { player.currentTime = pos; } catch (e) {}
-                    player.play().catch(() => console.log('Autoplay blocked'));
-                }
+        applySelectedMusic();
+        
+        // Always try to open/use persistent host to prevent music cutout on navigation
+        if (window.openAudioHost) {
+            window.openAudioHost({ file: musicSelect.value, time: parseFloat(localStorage.getItem('musicCurrentTime')) || 0, play: true });
+        }
+        
+        // Also try to play via in-page global player as backup
+        if (window.playGlobalAudio) {
+            try { window.playGlobalAudio(musicSelect.value, parseFloat(localStorage.getItem('musicCurrentTime')) || 0); } catch (e) {}
+        } else {
+            const player = getBg();
+            if (player) {
+                const pos = parseFloat(localStorage.getItem('musicCurrentTime')) || 0;
+                try { player.currentTime = pos; } catch (e) {}
+                player.play().catch(() => console.log('Autoplay blocked'));
             }
+        }
 
         resumeTimer(endTime);
     }
     updateStartButton();
 };
 
-// Save music selection change
+// Save music selection change and play immediately without waiting for page nav
 musicSelect.addEventListener('change', function () {
-    applySelectedMusic();
-    // if currently playing, ensure it plays immediately
+    const file = musicSelect.value;
+    localStorage.setItem('selectedMusic', file);
+    
+    // Update in-page player if exists
+    const player = getBg();
+    if (player) {
+        if (!player.src || player.src.indexOf(file) === -1) {
+            player.src = '../../../sounds/' + file;
+        }
+        const t = parseFloat(localStorage.getItem('musicCurrentTime')) || 0;
+        try { player.currentTime = t; } catch (e) {}
+    }
+    
+    // If music is playing, play new selection via host or in-page immediately
     if (musicPlaying) {
-        const player = getBg();
-        if (player) player.play().catch(() => {});
+        if (window.playGlobalAudio) {
+            window.playGlobalAudio(file, parseFloat(localStorage.getItem('musicCurrentTime')) || 0);
+        } else if (player) {
+            player.play().catch(() => {});
+        }
     }
 });
 

@@ -492,10 +492,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         confirmBox.classList.toggle('show');
     }
   </script>
-</body>
-</html>
-
-<script src="Shared/audioPlayer.js"></script>
-
+  <script src="Shared/audioPlayer.js"></script>
 </body>
 </html>

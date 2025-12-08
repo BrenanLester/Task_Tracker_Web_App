@@ -54,6 +54,7 @@
         };
     
         // Open or reuse a persistent audio host window to avoid playback interruption during navigation.
+        // Stores a reference on `window._audioHostWindow` and exposes helpers to control it.
         window.openAudioHost = function ({file, time = 0, play = false} = {}) {
             try {
                 const hostUrl = new URL('../Shared/audio_host.php', location.href).toString();
@@ -66,11 +67,58 @@
                 setTimeout(() => {
                     try { w.postMessage(msg, '*'); } catch (e) { }
                 }, 300);
+                // Save reference so other pages/scripts can message the host
+                try { window._audioHostWindow = w; } catch (e) {}
                 return w;
             } catch (err) {
                 console.error('openAudioHost error', err);
                 return null;
             }
+        };
+
+        // Send a control message to the host if available
+        window.sendToAudioHost = function (msg) {
+            try {
+                if (window._audioHostWindow && !window._audioHostWindow.closed) {
+                    window._audioHostWindow.postMessage(msg, '*');
+                    return true;
+                }
+                // try to locate the named window
+                const maybe = window.open('', 'debugmyday-audio');
+                if (maybe && !maybe.closed) {
+                    window._audioHostWindow = maybe;
+                    maybe.postMessage(msg, '*');
+                    return true;
+                }
+            } catch (e) { }
+            return false;
+        };
+
+        // Pause global audio (host or in-page)
+        window.pauseGlobalAudio = function () {
+            try {
+                // prefer host
+                if (window.sendToAudioHost && window.sendToAudioHost({ type: 'control', play: false })) return;
+            } catch (e) {}
+            try {
+                const p = window.getGlobalAudio && window.getGlobalAudio();
+                if (p) p.pause();
+            } catch (e) {}
+        };
+
+        // Play global audio (host or in-page). file/time optional
+        window.playGlobalAudio = function (file, time) {
+            try {
+                if (window.sendToAudioHost && window.sendToAudioHost({ type: 'control', file: file || localStorage.getItem('selectedMusic') || null, time: typeof time === 'number' ? time : parseFloat(localStorage.getItem('musicCurrentTime')) || 0, play: true })) return;
+            } catch (e) {}
+            try {
+                const p = window.getGlobalAudio && window.getGlobalAudio();
+                if (p) {
+                    if (file) p.src = '../../../sounds/' + file;
+                    try { p.currentTime = time || parseFloat(localStorage.getItem('musicCurrentTime')) || 0; } catch (e) {}
+                    p.play().catch(()=>{});
+                }
+            } catch (e) {}
         };
     } catch (err) {
         console.error('audioPlayer init error', err);
