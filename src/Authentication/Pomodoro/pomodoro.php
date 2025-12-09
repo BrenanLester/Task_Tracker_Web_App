@@ -39,7 +39,7 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
         <a class="menu-item" href="../Dashboard/dashboard.php"><i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span></a>
         <a class="menu-item" href="../Tasks/tasks.php"><i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span></a>
         <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> <span class="menu-text">Profile</span></a>
-        <a class="menu-item active" href="pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
+        <a class="menu-item active" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
         <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span></a>
         <a class="menu-item" href="../About/about.php"><i class="bi bi-info-circle"></i> <span class="menu-text">About Us</span></a>
     </nav>

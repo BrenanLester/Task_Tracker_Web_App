@@ -321,3 +321,19 @@ form {
         font-size: 30px;
     }
 }
+
+/* Code ni Winston sa Error Validation*/
+.form-error,
+.form-success {
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.form-error {
+    text-align: center;
+    color: #d9534f
+}
+
+.form-success {
+    color: #28a745
+}

@@ -33,6 +33,19 @@ try {
     // Extract the tasks CREATE TABLE block (simple approach: execute whole file safe because CREATE IF NOT EXISTS present)
     $pdo->exec($schema);
 
+    // Ensure tasks.subject column exists
+    $cols = $pdo->query("PRAGMA table_info('tasks')")->fetchAll(PDO::FETCH_ASSOC);
+    $hasSubject = false;
+    foreach ($cols as $c) {
+        if (isset($c['name']) && $c['name'] === 'subject') { $hasSubject = true; break; }
+    }
+    if (!$hasSubject) {
+        echo "Adding tasks.subject column...\n";
+        $pdo->exec("ALTER TABLE tasks ADD COLUMN subject TEXT");
+    } else {
+        echo "tasks.subject already present\n";
+    }
+
     // Ensure index exists
     echo "Ensuring idx_tasks_user_id exists...\n";
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id)");

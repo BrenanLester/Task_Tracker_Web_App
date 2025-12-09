@@ -2,77 +2,117 @@ let currentQuadrant = null;
 let editingTaskId = null;
 let taskIdCounter = 0;
 
-// API helper - uses relative path to CRUD Task.php and includes credentials
-function api(path, opts = {}) {
-  const url = path.startsWith('http') ? path : ('../../CRUD/Task.php' + (path ? (path.startsWith('?') ? path : ('?' + path)) : ''));
-  const fetchOpts = Object.assign({
-    credentials: 'same-origin',
-    headers: {}
-  }, opts);
+const API_URL = '../../CRUD/Task.php';
 
-  // If body is plain object, convert to URLSearchParams
-  if (fetchOpts.body && typeof fetchOpts.body === 'object' && !(fetchOpts.body instanceof FormData)) {
-    fetchOpts.body = new URLSearchParams(fetchOpts.body);
-    fetchOpts.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-  }
-
-  return fetch(url, fetchOpts).then(r => r.json());
-}
-
-// Load tasks from server and render
-function loadTasks() {
-  api('action=list', { method: 'GET' })
-    .then(data => {
-      if (!data || !data.success) return;
-      const tasks = data.tasks || [];
-      // Clear current lists
-      Object.keys(quadrantNames).forEach(q => {
-        const el = document.getElementById(q);
-        if (el) el.innerHTML = '';
-      });
-
-      if (tasks.length === 0) {
-        // show no-tasks in each quadrant
-        Object.keys(quadrantNames).forEach(q => {
-          const el = document.getElementById(q);
-          if (el && el.children.length === 0) el.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
-        });
-        return;
-      }
-
-      tasks.forEach(t => {
-        const list = document.getElementById(t.quadrant || 'others');
-        if (!list) return;
-
-        // Create task element with server id
-        taskIdCounter++;
-        const taskId = 'task-' + taskIdCounter;
-        const task = document.createElement('div');
-        task.className = 'task';
-        task.id = taskId;
-        task.dataset.title = t.title;
-        task.dataset.description = t.description || '';
-        task.dataset.subject = t.subject || '';
-        task.dataset.quadrant = t.quadrant || 'others';
-        task.dataset.completed = (t.status && t.status.toLowerCase() === 'completed') ? 'true' : 'false';
-        task.dataset.serverId = t.task_id;
-
-        task.innerHTML = createTaskHTML(taskId, t.title, t.description || '', t.subject || '', task.dataset.completed === 'true');
-        list.appendChild(task);
-      });
-    })
-    .catch(err => {
-      console.error('Failed to load tasks', err);
-    });
-}
-
-// Quadrant name mapping
 const quadrantNames = {
   'urgent-important': 'Important & Urgent',
   'important': 'Important but Not Urgent',
   'urgent': 'Not Important but Urgent',
   'others': 'Not Important & Not Urgent'
 };
+
+// --- Color Generator for Subjects ---
+function stringToHslColor(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = hash % 360;
+    return 'hsl(' + h + ', 70%, 85%)';
+}
+
+function getTasksFromStorage() {
+  const storedTasks = localStorage.getItem('eisenhowerTasks');
+  return storedTasks ? JSON.parse(storedTasks) : [];
+}
+
+function saveTasksToStorage(tasks) {
+  localStorage.setItem('eisenhowerTasks', JSON.stringify(tasks));
+}
+
+async function fetchTasksFromServer() {
+  try {
+    const res = await fetch(API_URL + '?action=list', { credentials: 'same-origin' });
+    if (!res.ok) throw new Error('Network error');
+    const data = await res.json();
+    if (data.success && data.tasks) return data.tasks;
+    return null;
+  } catch (e) {
+    console.error('Failed to fetch tasks from server:', e);
+    return null;
+  }
+}
+
+async function postToServer(payload) {
+  try {
+    const res = await fetch(API_URL + '?action=' + (payload.action || 'create'), {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(payload).toString()
+    });
+    if (!res.ok) throw new Error('Network error');
+    return await res.json();
+  } catch (e) {
+    console.error('Server request failed:', e);
+    return { success: false, message: e.message };
+  }
+}
+
+// Helper to display 'no tasks' message
+function showNoTasksMessage(quadrantId) {
+    const list = document.getElementById(quadrantId);
+    if (list && list.children.length === 0) {
+        list.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
+    }
+}
+
+async function loadTasks() {
+  // Try server first, fallback to localStorage
+  const serverTasks = await fetchTasksFromServer();
+  let tasks = serverTasks;
+  if (!tasks) tasks = getTasksFromStorage();
+
+  Object.keys(quadrantNames).forEach(q => {
+    const el = document.getElementById(q);
+    if (el) el.innerHTML = '';
+  });
+
+  // If tasks came from server, use DB ids. Otherwise keep local ids.
+  const maxId = tasks.reduce((max, t) => {
+    const idPart = t.task_id ? String(t.task_id) : String(t.id || '0').split('-')[1] || '0';
+    return Math.max(max, parseInt(idPart || 0, 10));
+  }, 0);
+  taskIdCounter = maxId;
+
+  tasks.forEach(t => {
+    const allowed = Object.keys(quadrantNames);
+    const quadrantKey = (t.quadrant && allowed.includes(t.quadrant)) ? t.quadrant : 'others';
+
+    const list = document.getElementById(quadrantKey);
+    if (!list) return;
+
+    const noTasksMsg = list.querySelector('.no-tasks');
+    if (noTasksMsg) noTasksMsg.remove();
+
+    const task = document.createElement('div');
+    task.className = 'task';
+    const idValue = t.task_id ? `task-${t.task_id}` : (t.id || `task-0`);
+    task.id = idValue;
+    task.dataset.title = t.title;
+    task.dataset.description = t.description || '';
+    task.dataset.subject = t.subject || '';
+    task.dataset.quadrant = quadrantKey;
+    const completed = (t.status && t.status.toLowerCase().includes('complete')) || t.completed;
+    task.dataset.completed = completed ? 'true' : 'false';
+
+    task.innerHTML = createTaskHTML(idValue, t.title, t.description || '', t.dataset.subject, completed);
+    list.appendChild(task);
+  });
+
+  Object.keys(quadrantNames).forEach(showNoTasksMessage);
+}
+
 
 function openModal(quad) {
   currentQuadrant = quad;
@@ -81,29 +121,14 @@ function openModal(quad) {
   const modal = document.getElementById("modal");
   modal.classList.add('show');
 
-  // Reset form for new task
+  // Reset form
+  document.getElementById("task-title").value = "";
+  document.getElementById("task-description").value = "";
+  document.getElementById("task-subject").value = "";
   document.getElementById('modal-title').textContent = 'Add New Task';
-  document.getElementById('modal-subtitle').textContent = 'Create a new task in the Eisenhower Matrix';
+  document.getElementById('modal-subtitle').textContent = `Adding task to: ${quadrantNames[quad]}`;
   document.getElementById('submit-btn').textContent = 'Add Task';
 
-  // Set the quadrant dropdown to match the clicked quadrant
-  const quadrantBtn = document.getElementById('selected-quadrant');
-  quadrantBtn.textContent = quadrantNames[quad];
-
-  // Update active state in dropdown
-  const dropdownItems = document.querySelectorAll('.dropdown-item');
-  dropdownItems.forEach(item => {
-    item.classList.remove('active');
-  });
-
-  // Find and activate the correct dropdown item
-  dropdownItems.forEach(item => {
-    if (item.querySelector('span').textContent === quadrantNames[quad]) {
-      item.classList.add('active');
-    }
-  });
-
-  // Focus on the task title input
   setTimeout(() => {
     document.getElementById('task-title').focus();
   }, 100);
@@ -113,46 +138,10 @@ function closeModal() {
   const modal = document.getElementById("modal");
   modal.classList.remove('show');
 
-  // Reset form
-  document.getElementById("task-title").value = "";
-  document.getElementById("task-description").value = "";
-  document.getElementById("task-subject").value = "";
   editingTaskId = null;
-
-  // Close dropdown if open
-  const dropdownMenu = document.getElementById('dropdown-menu');
-  const dropdownBtn = document.getElementById('quadrant-btn');
-  dropdownMenu.classList.remove('show');
-  dropdownBtn.classList.remove('open');
+  currentQuadrant = null;
 }
 
-function toggleDropdown() {
-  const dropdownMenu = document.getElementById('dropdown-menu');
-  const dropdownBtn = document.getElementById('quadrant-btn');
-
-  dropdownMenu.classList.toggle('show');
-  dropdownBtn.classList.toggle('open');
-}
-
-function selectQuadrant(quadrantId, quadrantName, element) {
-  // Update current quadrant
-  currentQuadrant = quadrantId;
-
-  // Update button text
-  document.getElementById('selected-quadrant').textContent = quadrantName;
-
-  // Update active state - remove from all
-  const dropdownItems = document.querySelectorAll('.dropdown-item');
-  dropdownItems.forEach(item => {
-    item.classList.remove('active');
-  });
-
-  // Add active to clicked item
-  element.classList.add('active');
-
-  // Close dropdown
-  toggleDropdown();
-}
 
 function saveTask(event) {
   event.preventDefault();
@@ -174,76 +163,67 @@ function addTask() {
     return;
   }
 
-  const list = document.getElementById(currentQuadrant);
+  // Ensure we have a valid quadrant; fallback to 'others'
+  const allowed = Object.keys(quadrantNames);
+  const quadrantToUse = (currentQuadrant && allowed.includes(currentQuadrant)) ? currentQuadrant : 'others';
 
-  // Remove "no tasks" message if it exists
+  const list = document.getElementById(quadrantToUse);
+  if (!list) return; // defensive
+
   const noTasksMsg = list.querySelector('.no-tasks');
-  if (noTasksMsg) {
-    noTasksMsg.remove();
-  }
+  if (noTasksMsg) noTasksMsg.remove();
 
-  // Optimistically create UI element and persist to server
-  taskIdCounter++;
-  const taskId = `task-${taskIdCounter}`;
-
-  const task = document.createElement("div");
-  task.className = "task pending-save";
-  task.id = taskId;
-  task.dataset.title = taskTitle;
-  task.dataset.description = taskDescription;
-  task.dataset.subject = taskSubject;
-  task.dataset.quadrant = currentQuadrant;
-  task.dataset.completed = "false";
-
-  task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
-  list.appendChild(task);
-
-  // Close modal immediately for UX
-  closeModal();
-
-  // Persist to server
-  api('action=create', {
-    method: 'POST',
-    body: {
+  // Try to create on the server
+  (async () => {
+    const payload = {
+      action: 'create',
       title: taskTitle,
       description: taskDescription,
       subject: taskSubject,
-      quadrant: currentQuadrant,
-      priority: 'Medium',
-      due_date: '' ,
-      status: 'Pending'
-    }
-  }).then(resp => {
-    if (resp && resp.success) {
-      // Save server id on element and remove pending marker
-      task.dataset.serverId = resp.id || resp.inserted_id || resp.task_id || '';
-      task.classList.remove('pending-save');
-      showNotification('Task added successfully');
-      // Optionally refresh dashboard counts via redirect or small polling
+      quadrant: quadrantToUse
+    };
+    const res = await postToServer(payload);
+    if (res && res.success && res.id) {
+      const serverId = res.id;
+      const taskId = `task-${serverId}`;
+      const task = document.createElement("div");
+      task.className = "task";
+      task.id = taskId;
+      task.dataset.title = taskTitle;
+      task.dataset.description = taskDescription;
+      task.dataset.subject = taskSubject;
+      task.dataset.quadrant = quadrantToUse;
+      task.dataset.completed = "false";
+
+      task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
+      list.appendChild(task);
+
+      closeModal();
+      showNotification('Task added successfully', 'success');
     } else {
-      // Remove optimistic element
-      task.remove();
-      showNotification('Failed to save task');
-      console.error('Create task failed', resp);
+      showNotification('Error: ' + (res?.message || 'Failed to save task'), 'error');
+      closeModal();
     }
-  }).catch(err => {
-    task.remove();
-    showNotification('Failed to save task');
-    console.error('Create task error', err);
-  });
+  })();
 }
 
 function createTaskHTML(taskId, title, description, subject, completed) {
+  const subjectColor = subject ? stringToHslColor(subject) : '';
+
   let html = '<div class="task-header">';
   html += '<div class="task-content">';
   html += `<div class="task-title ${completed ? 'completed' : ''}">${title}</div>`;
 
   if (description) {
-    html += `<div class="task-description">${description}</div>`;
+    html += `<div class="task-description text-muted small">${description}</div>`;
+  }
+  
+  if (subject) {
+      html += `<div class="task-subject" style="background-color: ${subjectColor}; color: #3b1366;">${subject}</div>`;
   }
 
   html += '</div>';
-  html += '<div class="task-actions">';
+  html += '<div class="task-actions d-flex gap-1">';
   html += `<button class="task-action-btn check" onclick="toggleComplete('${taskId}')" title="Mark as complete"><i class="bi bi-check-lg"></i></button>`;
   html += `<button class="task-action-btn edit" onclick="editTask('${taskId}')" title="Edit task"><i class="bi bi-pencil"></i></button>`;
   html += `<button class="task-action-btn delete" onclick="deleteTask('${taskId}')" title="Delete task"><i class="bi bi-trash"></i></button>`;
@@ -255,16 +235,36 @@ function createTaskHTML(taskId, title, description, subject, completed) {
 
 function toggleComplete(taskId) {
   const task = document.getElementById(taskId);
-  const isCompleted = task.dataset.completed === "true";
+  let isCompleted = task.dataset.completed === "true";
 
-  task.dataset.completed = !isCompleted;
+  isCompleted = !isCompleted;
+  task.dataset.completed = isCompleted ? "true" : "false";
 
   const titleElement = task.querySelector('.task-title');
-  if (!isCompleted) {
+  if (isCompleted) {
     titleElement.classList.add('completed');
   } else {
     titleElement.classList.remove('completed');
   }
+  
+  // Persist change on server if possible
+  const numericId = (taskId || '').split('-')[1];
+  const title = task.dataset.title;
+  const description = task.dataset.description;
+  const subject = task.dataset.subject;
+
+  (async () => {
+    if (numericId && !isNaN(numericId)) {
+      const res = await postToServer({ action: 'update', id: numericId, title, description, subject, quadrant: task.dataset.quadrant, status: isCompleted ? 'Completed' : 'Pending' });
+      if (res && res.success) {
+        if (isCompleted) showNotification("Task marked complete", 'success');
+        else showNotification("Task marked incomplete", 'error');
+        return;
+      }
+    }
+    if (isCompleted) showNotification("Task marked complete", 'success');
+    else showNotification("Task marked incomplete", 'error');
+  })();
 }
 
 function editTask(taskId) {
@@ -272,30 +272,14 @@ function editTask(taskId) {
   editingTaskId = taskId;
   currentQuadrant = task.dataset.quadrant;
 
-  // Populate form with existing data
   document.getElementById('task-title').value = task.dataset.title;
   document.getElementById('task-description').value = task.dataset.description;
   document.getElementById('task-subject').value = task.dataset.subject;
 
-  // Update modal UI for editing
   document.getElementById('modal-title').textContent = 'Edit Task';
-  document.getElementById('modal-subtitle').textContent = 'Update task details';
+  document.getElementById('modal-subtitle').textContent = `Editing task in: ${quadrantNames[currentQuadrant]}`;
   document.getElementById('submit-btn').textContent = 'Update Task';
 
-  // Set quadrant dropdown
-  const quadrantBtn = document.getElementById('selected-quadrant');
-  quadrantBtn.textContent = quadrantNames[currentQuadrant];
-
-  // Update active state in dropdown
-  const dropdownItems = document.querySelectorAll('.dropdown-item');
-  dropdownItems.forEach(item => {
-    item.classList.remove('active');
-    if (item.querySelector('span').textContent === quadrantNames[currentQuadrant]) {
-      item.classList.add('active');
-    }
-  });
-
-  // Open modal
   const modal = document.getElementById("modal");
   modal.classList.add('show');
 
@@ -315,39 +299,36 @@ function updateTask() {
   }
 
   const task = document.getElementById(editingTaskId);
-  const oldQuadrant = task.dataset.quadrant;
   const completed = task.dataset.completed === "true";
 
-  // Update task data
-  task.dataset.title = taskTitle;
-  task.dataset.description = taskDescription;
-  task.dataset.subject = taskSubject;
-  task.dataset.quadrant = currentQuadrant;
+  // If the task came from server it will have id like 'task-<num>'
+  const numericId = (editingTaskId || '').split('-')[1];
 
-  // If quadrant changed, move task
-  if (oldQuadrant !== currentQuadrant) {
-    const newList = document.getElementById(currentQuadrant);
-
-    // Remove "no tasks" message if exists
-    const noTasksMsg = newList.querySelector('.no-tasks');
-    if (noTasksMsg) {
-      noTasksMsg.remove();
+  (async () => {
+    if (numericId && !isNaN(numericId)) {
+      const payload = {
+        action: 'update',
+        id: numericId,
+        title: taskTitle,
+        description: taskDescription,
+        subject: taskSubject,
+        quadrant: currentQuadrant || task.dataset.quadrant || 'others',
+        status: completed ? 'Completed' : 'Pending'
+      };
+      const res = await postToServer(payload);
+      if (res && res.success) {
+        task.dataset.title = taskTitle;
+        task.dataset.description = taskDescription;
+        task.dataset.subject = taskSubject;
+        task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
+        closeModal();
+        showNotification("Task updated successfully", 'info');
+        return;
+      }
     }
-
-    newList.appendChild(task);
-
-    // Check if old quadrant is now empty
-    const oldList = document.getElementById(oldQuadrant);
-    if (oldList.children.length === 0) {
-      oldList.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
-    }
-  }
-
-  // Update task HTML
-  task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
-
-  closeModal();
-  showNotification("Task updated successfully");
+    showNotification("Error updating task", 'error');
+    closeModal();
+  })();
 }
 
 function deleteTask(taskId) {
@@ -358,40 +339,40 @@ function deleteTask(taskId) {
   const task = document.getElementById(taskId);
   const quadrant = task.dataset.quadrant;
 
-  task.remove();
+  const numericId = (taskId || '').split('-')[1];
 
-  // Check if quadrant is now empty
-  const list = document.getElementById(quadrant);
-  if (list.children.length === 0) {
-    list.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
-  }
+  (async () => {
+    if (numericId && !isNaN(numericId)) {
+      const res = await postToServer({ action: 'delete', id: numericId });
+      if (res && res.success) {
+        task.remove();
+        showNoTasksMessage(quadrant);
+        showNotification("Task deleted", 'error');
+        return;
+      }
+    }
 
-  showNotification("Task deleted");
+    // Fallback: remove locally
+    task.remove();
+    showNoTasksMessage(quadrant);
+    showNotification("Task deleted", 'error');
+  })();
 }
 
-function showNotification(message) {
+function showNotification(message, type = 'success') {
   const notification = document.getElementById('notification');
   const notificationText = document.getElementById('notification-text');
 
+  notification.className = 'notification'; 
+  
   notificationText.textContent = message;
+  notification.classList.add(type); 
   notification.classList.add('show');
 
   setTimeout(() => {
     notification.classList.remove('show');
   }, 3000);
 }
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function (event) {
-  const dropdownWrapper = document.querySelector('.dropdown-wrapper');
-  const dropdownMenu = document.getElementById('dropdown-menu');
-  const dropdownBtn = document.getElementById('quadrant-btn');
-
-  if (dropdownWrapper && !dropdownWrapper.contains(event.target)) {
-    dropdownMenu.classList.remove('show');
-    dropdownBtn.classList.remove('open');
-  }
-});
 
 // Close modal when clicking outside
 document.getElementById('modal').addEventListener('click', function (event) {
@@ -411,6 +392,36 @@ document.addEventListener('keydown', function (event) {
 });
 
 // Load tasks from server on page load
-document.addEventListener('DOMContentLoaded', function () {
-  loadTasks();
-});
+document.addEventListener('DOMContentLoaded', loadTasks);
+
+const appNav = document.getElementById('app-nav');
+const menuToggle = document.getElementById('menu-toggle');
+const appContent = document.querySelector('.app-content');
+const appFooter = document.querySelector('.footer');
+
+// Helper function to toggle the classes
+const toggleMenu = () => {
+    if (appNav) appNav.classList.toggle('nav-open');
+    if (appContent) appContent.classList.toggle('blur-content');
+    if (appFooter) appFooter.classList.toggle('blur-content');
+};
+
+if (menuToggle) {
+    menuToggle.addEventListener('click', toggleMenu);
+}
+
+if (appContent) {
+    appContent.addEventListener('click', (event) => {
+        if (appNav && appNav.classList.contains('nav-open') && event.currentTarget.classList.contains('blur-content')) {
+            toggleMenu();
+        }
+    });
+}
+
+if (appFooter) {
+    appFooter.addEventListener('click', (event) => {
+        if (appNav && appNav.classList.contains('nav-open') && event.currentTarget.classList.contains('blur-content')) {
+            toggleMenu();
+        }
+    });
+}

@@ -201,4 +201,4 @@ if (!display) {
 
     initState();
     updateStartButton();
-}
+    }

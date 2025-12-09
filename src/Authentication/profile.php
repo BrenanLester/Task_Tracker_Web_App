@@ -18,29 +18,62 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'update') {
-            // Update profile
-            $name = trim($_POST["name"]);
-            $email = trim($_POST["email"]);
+          // Update profile (name/email) and optionally change password
+          $name = trim($_POST["name"]);
+          $email = trim($_POST["email"]);
+          $current_password = trim($_POST['current_password'] ?? '');
+          $new_password = trim($_POST['new_password'] ?? '');
+          $verify_password = trim($_POST['verify_password'] ?? '');
 
-            if (!$name || !$email) {
-                $error = "All fields are required.";
+          if (!$name || !$email) {
+            $error = "Name and email are required.";
+          } else {
+            // Check if email is already taken by another user
+            $check = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
+            $check->execute([$email, $user_id]);
+            if ($check->fetch()) {
+              $error = "This email is already taken by another user.";
             } else {
-                     // Check if email is already taken by another user
-                     $check = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
-                     $check->execute([$email, $user_id]);
-                     if ($check->fetch()) {
-                    $error = "This email is already taken by another user.";
+              // If any password field filled, perform password change validation
+              $changingPassword = ($current_password !== '' || $new_password !== '' || $verify_password !== '');
+
+              if ($changingPassword) {
+                // All three must be provided
+                if ($current_password === '' || $new_password === '' || $verify_password === '') {
+                  $error = "To change your password, fill current, new, and verify fields.";
                 } else {
-                    $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE user_id = ?");
-                    $stmt->execute([$name, $email, $user_id]);
-                    
-                    // Update session
+                  // Fetch current hashed password
+                  $stmt = $pdo->prepare("SELECT password FROM users WHERE user_id = ?");
+                  $stmt->execute([$user_id]);
+                  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                  if (!$row || !password_verify($current_password, $row['password'])) {
+                    $error = "Current password is incorrect.";
+                  } elseif ($new_password !== $verify_password) {
+                    $error = "New password and verification do not match.";
+                  } elseif (strlen($new_password) < 8) {
+                    $error = "New password must be at least 8 characters.";
+                  } else {
+                    // All good — update name, email and password
+                    $hash = password_hash($new_password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, password = ? WHERE user_id = ?");
+                    $stmt->execute([$name, $email, $hash, $user_id]);
+
+                    // Update session and user variable
                     $_SESSION["name"] = $name;
-                    
-                    $message = "Profile updated successfully!";
+                    $message = "Profile and password updated successfully!";
                     $user = ["name" => $name, "email" => $email];
+                  }
                 }
+              } else {
+                // No password change requested — update name/email only
+                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE user_id = ?");
+                $stmt->execute([$name, $email, $user_id]);
+                $_SESSION["name"] = $name;
+                $message = "Profile updated successfully!";
+                $user = ["name" => $name, "email" => $email];
+              }
             }
+          }
         } elseif ($_POST['action'] === 'delete') {
             // Delete account
             $password = trim($_POST["password"] ?? "");
@@ -58,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->execute([$user_id]);
                 
                 session_destroy();
-                header("Location: login.php?deleted=true");
+                header("Location: ../../index.html");
                 exit;
             }
         }
@@ -491,14 +524,33 @@ button {
                 </div>
 
                 <div class="mb-4">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                  <label for="email" class="form-label">Email Address</label>
+                  <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                </div>
+
+                <hr />
+                <h5 style="color:#3b1366; margin-bottom:12px;">Update Password</h5>
+                <p class="text-muted" style="margin-top:-8px; margin-bottom:12px; font-size:0.95rem;">Leave blank to keep your current password.</p>
+
+                <div class="mb-3">
+                  <label for="current_password" class="form-label">Current Password</label>
+                  <input type="password" class="form-control" id="current_password" name="current_password" placeholder="Enter current password">
+                </div>
+
+                <div class="mb-3">
+                  <label for="new_password" class="form-label">New Password</label>
+                  <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New password (min 8 characters)">
+                </div>
+
+                <div class="mb-3">
+                  <label for="verify_password" class="form-label">Verify Password</label>
+                  <input type="password" class="form-control" id="verify_password" name="verify_password" placeholder="Re-type new password">
                 </div>
 
                 <div class="button-group">
-                    <button type="submit" class="btn-primary">
-                        <i class="bi bi-save"></i> Save Changes
-                    </button>
+                  <button type="submit" class="btn-primary">
+                    <i class="bi bi-save"></i> Save Changes
+                  </button>
                 </div>
             </form>
         </div>

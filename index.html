@@ -1,132 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DebugMyDay — Login / Registration</title>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>DebugMyDay - Task & Goal Management</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="hero.css">
 </head>
+<body id="top" data-theme="light">
+    <header>
+        <div class="container navbar">
+                <div class="logo">
+                    <img src="logo-dmd.jpg" alt="DebugMyDay logo" class="logo-img" />
+                    <span class="logo-text">DebugMyDay</span>
+                </div>
+           
 
-<body>
+            <button class="mobile-nav-toggle" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
 
-    <div class="container">
-        <div class="form-box login">
-            <form id="loginForm" action="src/Authentication/login.php" method="POST">
-                <h1>Login</h1>
-                <div class="input-box">
-                    <input id="login-email" name="email" type="email" placeholder="Email" required>
-                    <i class='bx bxs-user'></i>
-                </div>
-                <div class="input-box">
-                    <input id="login-password" name="password" type="password" placeholder="Password" required>
-                    <i class='bx bxs-lock-alt'></i>
-                </div>
-                <div class="forgot-link">
-                    <a href="#">Forgot password?</a>
-                </div>
-                <button id="loginBtn" type="submit" class="btn">Login</button>
-                <p class="form-note">or login with social platforms</p>
-                <div class="social-icons">
-                    <a href="https://accounts.google.com/" target="_blank">
-                        <i class='bx bxl-google'></i>
-                    </a>
-                    <a href="https://www.facebook.com/login.php" target="_blank">
-                        <i class='bx bxl-facebook'></i>
-                    </a>
-                    <a href="https://github.com/login" target="_blank">
-                        <i class='bx bxl-github'></i>
-                    </a>
-                    <a href="https://www.linkedin.com/login" target="_blank">
-                        <i class='bx bxl-linkedin'></i>
-                    </a>
-                </div>
-            </form>
+            <nav id="mobile-menu" class="nav-actions" role="navigation">
+                
+                <button id="dark-mode-toggle" class="nav-dark-mode-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i> <span class="desktop-hidden">Dark Mode</span>
+                </button>
+
+                <a id="scroll-to-overview-btn" href="#overview" class="btn btn-secondary btn-nav">Overview</a>
+                
+                <a id="cta-go-to-app-mobile" href="#" class="btn btn-nav">Go to DebugMyDay</a>
+            </nav>
         </div>
+    </header>
 
-        <div class="form-box register">
-            <form id="registerForm" action="src/Authentication/register.php" method="POST">
-                <h1>Registration</h1>
-                <div class="input-box">
-                    <input id="reg-name" name="name" type="text" placeholder="Username" required>
-                    <i class='bx bxs-user'></i>
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content-wrapper">
+                    <div class="hero-text">
+                        <h1>
+                            Organize Your Life. <span class="hero-accent">Debug Your Day.</span>
+                        </h1>
+                        <p class="subtitle">
+                            Transform plans into accomplishments with an intuitive and secure platform for task and goal management.
+                        </p>
+                        <div class="cta-group">
+                            <button id="cta-free-trial" class="btn btn-large">Login/Register Now!</button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <img class="image"
+                             src="hero-pic.png" 
+                             alt="DebugMyDay application interface sample" />
+                    </div>
                 </div>
-                <div class="input-box">
-                    <input id="reg-email" name="email" type="email" placeholder="Email" required>
-                    <i class='bx bxs-envelope'></i>
-                </div>
-                <div class="input-box">
-                    <input id="reg-password" name="password" type="password" placeholder="Password" required>
-                    <i class='bx bxs-lock-alt'></i>
-                </div>
-                <button id="regBtn" type="submit" class="btn">Register</button>
-                <p class="form-note">or register with social platforms</p>
-                <div class="social-icons">
-                    <a href="https://accounts.google.com/" target="_blank">
-                        <i class='bx bxl-google'></i>
-                    </a>
-                    <a href="https://www.facebook.com/login.php" target="_blank">
-                        <i class='bx bxl-facebook'></i>
-                    </a>
-                    <a href="https://github.com/login" target="_blank">
-                        <i class='bx bxl-github'></i>
-                    </a>
-                    <a href="https://www.linkedin.com/login" target="_blank">
-                        <i class='bx bxl-linkedin'></i>
-                    </a>
-                </div>
-            </form>
-        </div>
-
-        <div class="toggle-box">
-            <div class="toggle-panel toggle-left">
-                <h1>Hello, Welcome!</h1>
-                <p>Don't have an account?</p>
-                <button class="btn register-btn">Register</button>
             </div>
-            <div class="toggle-panel toggle-right">
-                <h1>Welcome Back!</h1>
-                <p>Already have an account?</p>
-                <button class="btn login-btn">Login</button>
+        </section>
+        <section id="overview" class="content-section">
+            <div class="container">
+                <div class="section-box">
+                    <h2><i class="bi bi-check2-circle"></i> App Overview</h2>
+                    <p class="content-paragraph">
+                        DebugMyDay is your all-in-one digital workspace designed for peak efficiency. It allows you to seamlessly <b>organize, manage, and track</b> daily tasks, professional projects, and long-term goals. Our clean, intuitive interface is built to maximize your productivity while ensuring your personal data remains private and secure at all times.
+                    </p>
+                    <div class="cta-section-box">
+                        <button id="cta-overview-app" class="btn btn-nav">Go to DebugMyDay</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="mission-vision" class="content-section">
+            <div class="container card-grid">
+                <article class="card">
+                    <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+                    <p class="content-paragraph">
+                        Our mission is to <b> empower every individual </b> to take control of their time and turn aspirations into measurable accomplishments. We provide an exceptionally intuitive, reliable, and secure task management platform that simplifies complex planning.
+                    </p>
+                </article>
+
+                <article class="card">
+                    <h2><i class="fas fa-eye"></i> Our Vision</h2>
+                    <p class="content-paragraph">
+                        Our vision is to be the <b>most trusted and widely-used </b>personal and professional task management platform globally, recognized for transforming user productivity and helping millions achieve their fullest potential through structured daily planning.
+                    </p>
+                </article>
+            </div>
+        </section>
+        <section id="about" class="content-section">
+            <div class="container">
+                <div class="section-box about-box">
+                    <h2>About Us</h2>
+                    <p class="content-paragraph">
+                       DebugMyDay originated as a collaborative project by <b>Group 1</b> of <b>BSIS 2</b> at <b>La Verdad Christian College.</b>  It was developed specifically for the Responsive Web Design and Web Application Development course to apply our theoretical knowledge in creating a secure, efficient, and real-world task management platform.
+                    </p>
+                    <div class="cta-about">
+                        <button id="cta-meet-team" class="btn btn-secondary">Meet the Team</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">DebugMyDay</div>
+                <div class="social-links" aria-label="Social media links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="copyright">
+                &copy; <span id="current-year"></span> DebugMyDay. A project by Group 1 of BSIS 2 at La Verdad Christian College. All rights reserved.
             </div>
         </div>
-    </div>
+    </footer>
 
-    <script src="script.js"></script>
-    <script>
-        // Display error or success message if present in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        const success = urlParams.get('success');
-
-        if (error) {
-            const loginForm = document.getElementById('loginForm');
-            const errorDiv = document.createElement('p');
-            errorDiv.style.color = 'red';
-            errorDiv.style.marginBottom = '10px';
-            errorDiv.style.textAlign = 'center';
-            errorDiv.textContent = error;
-            loginForm.insertBefore(errorDiv, loginForm.firstChild.nextSibling);
-
-            // Remove error from URL without reloading
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        if (success) {
-            const loginForm = document.getElementById('loginForm');
-            const successDiv = document.createElement('p');
-            successDiv.style.color = 'green';
-            successDiv.style.marginBottom = '10px';
-            successDiv.style.textAlign = 'center';
-            successDiv.textContent = success;
-            loginForm.insertBefore(successDiv, loginForm.firstChild.nextSibling);
-
-            // Remove success from URL without reloading
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    </script>
+    <script src="hero.js"></script>
 </body>
-
 </html>

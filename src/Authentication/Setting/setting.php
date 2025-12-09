@@ -52,7 +52,7 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
         <a class="menu-item" href="../Pomodoro/pomodoro.php">
             <i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span>
         </a>
-        <a class="menu-item active" href="setting.php">
+        <a class="menu-item active" href="../Setting/setting.php">
             <i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span>
         </a>
         <a class="menu-item" href="../About/about.php">
