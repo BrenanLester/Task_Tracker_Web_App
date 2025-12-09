@@ -161,40 +161,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             gap: 10px;
         }
 
+        /* Tabs removed: show both sections on a single page */
         .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e9ddff;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s;
-        }
-
-        .tab-btn.active {
-            color: #6d28d9;
-            border-bottom-color: #6d28d9;
-        }
-
-        .tab-btn:hover {
-            color: #5a1fb8;
+            display: none; /* tabs UI hidden since both sections are merged */
         }
 
         .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
+            display: block; /* show all tab sections on the single merged page */
         }
 
         .form-label {
@@ -223,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .button-group {
             display: flex;
             gap: 15px;
-            margin-top: 25px;
+            margin: 25px 0px;
         }
 
         button {
@@ -387,14 +360,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
         <?php endif; ?>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('edit')">
-                <i class="bi bi-pencil"></i> Edit Profile
-            </button>
-            <button class="tab-btn" onclick="showTab('delete')">
-                <i class="bi bi-trash"></i> Delete Account
-            </button>
-        </div>
+        <!-- Single merged page: profile edit form followed by delete-account section -->
 
         <!-- Edit Profile Tab -->
         <div id="edit" class="tab-content active">

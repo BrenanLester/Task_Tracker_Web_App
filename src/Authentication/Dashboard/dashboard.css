@@ -204,6 +204,75 @@ font-size: 0.95rem;
 border-bottom: none;
 }
 
+/* Activity Items Styling */
+.activity-item {
+background-color: #f1e9fa;
+border-left: 4px solid #6d28d9;
+padding: 16px 12px;
+margin-bottom: 12px;
+border-radius: 8px;
+}
+
+.activity-item .task-title {
+font-weight: 600;
+color: #3b1366;
+margin-bottom: 8px;
+font-size: 0.95rem;
+}
+
+.activity-item .task-meta {
+display: flex;
+gap: 8px;
+align-items: center;
+flex-wrap: wrap;
+font-size: 0.85rem;
+}
+
+/* Priority Badges */
+.priority-badge {
+padding: 4px 10px;
+border-radius: 12px;
+font-weight: 500;
+font-size: 0.8rem;
+}
+
+.priority-low {
+background-color: #dbeafe;
+color: #1e40af;
+}
+
+.priority-medium {
+background-color: #fef08a;
+color: #92400e;
+}
+
+.priority-high {
+background-color: #fecaca;
+color: #991b1b;
+}
+
+/* Status Badges */
+.status-badge {
+padding: 4px 10px;
+border-radius: 12px;
+font-weight: 500;
+font-size: 0.8rem;
+}
+
+.status-pending {
+background-color: #fed7aa;
+color: #92400e;
+}
+
+.status-in-progress {
+background-color: #bfdbfe;
+color: #1e3a8a;
+}
+
+.status-completed {
+background-color: #bbf7d0;
+color: #065f46;
+}
 
 
 @media (max-width: 1100px) {
