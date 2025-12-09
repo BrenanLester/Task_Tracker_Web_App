@@ -359,8 +359,6 @@ margin-left: 0;
 }
 }
 
-
-
 .app-content.blur-content,
 .footer.blur-content {
     filter: blur(4px); 
