@@ -4,11 +4,14 @@
     const appFooter = document.querySelector('.footer');
 
     // Helper function to toggle the classes
-const toggleMenu = () => {
-    appNav.classList.toggle('nav-open');
-    appContent.classList.toggle('blur-content');
-    appFooter.classList.toggle('blur-content');
-};
+    const toggleMenu = () => {
+        appNav.classList.toggle('nav-open');
+        // Blur content for backdrop effect
+        if (appContent) appContent.classList.toggle('blur-content');
+        if (appFooter) appFooter.classList.toggle('blur-content');
+        // Add nav-pushed so content shifts right when nav opens (matches dashboard)
+        if (appContent) appContent.classList.toggle('nav-pushed');
+    };
 
 if (menuToggle) {
     menuToggle.addEventListener('click', toggleMenu);

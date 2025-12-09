@@ -1,3 +1,4 @@
+/* === Base Styles === */
 body {
   background-color: #f6f2fc;
   font-family: 'Poppins', sans-serif;
@@ -6,7 +7,7 @@ body {
 
 .sidebar {
   width: 260px;
-  background-color: #3b1366; 
+  background-color: #3b1366;
   min-height: 100vh;
   color: #fff;
   position: fixed;
@@ -15,6 +16,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 25px 20px;
+  transition: width .28s ease, transform .28s ease;
 }
 
 .sidebar h5 {
@@ -23,7 +25,7 @@ body {
   margin-bottom: 30px;
 }
 
-/* Menu items */
+/* Menu Items */
 .menu-item {
   padding: 12px 18px;
   border-radius: 10px;
@@ -42,13 +44,11 @@ body {
   font-size: 20px;
 }
 
-/* Active style (exact dashboard color) */
 .menu-item.active {
-  background-color:  #6d28d9 ;
+  background-color: #6d28d9;
   color: #fff;
 }
 
-/* Hover */
 .menu-item:hover {
   background-color: #7626db;
   color: white;
@@ -58,19 +58,31 @@ body {
   margin-top: auto;
 }
 
-/* ======= MAIN ======= */
-.main {
-  margin-left: 260px; /* THIS FIXES THE OVERLAP */
+/* Main Content */
+.app-content,
+.main,
+.content {
+  margin-left: 260px;
+  min-height: 100vh;
   padding: 40px;
-  color: #4b3b63;
+  transition: margin-left .28s ease;
 }
 
+/* Footer */
+.footer {
+  margin-left: 260px;
+  padding-top: 20px;
+  font-size: 14px;
+  color: #7b6f92;
+}
+
+/* Subtitle */
 .subtitle {
   margin-top: -10px;
   color: #7b6f92;
 }
 
-/* ======= MATRIX (COLORS NOT TOUCHED) ======= */
+/* === Eisenhower Matrix === */
 .matrix {
   margin-top: 30px;
   display: grid;
@@ -83,44 +95,8 @@ body {
   border-radius: 12px;
   padding: 25px;
   min-height: 220px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   border: 1px solid #eee;
-}
-
-.no-task-message {
-    text-align: center;
-    color: #8b78a6;
-    font-size: 14px;
-    margin-top: 40px;
-}
-
-.no-task-message.hidden {
-    display: none;
-}
-
-.quad-red { 
-    background: #ffe0e0;
-    border-style: solid;
-    border-width: 3px;
-    border-color: #f6caca; 
-}
-.quad-yellow { 
-    background: #fff1d6;
-    border-style: solid;
-    border-width: 3px;
-    border-color: #ffd787; 
-}
-.quad-blue { 
-    background: #e4f2ff;
-    border-style: solid;
-    border-width: 3px;
-    border-color: #98cdff;  
-}
-.quad-green { 
-    background: #e6f9ef;
-    border-style: solid;
-    border-width: 3px;
-    border-color: #8cffc2; 
 }
 
 .quad-header {
@@ -158,12 +134,32 @@ body {
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #eee;
 }
 
-/* ======= MODAL ======= */
-/* ======= MODAL ======= */
+/* Quadrant Colors */
+.quad-red {
+  background: #ffe0e0;
+  border: 3px solid #f6caca;
+}
+
+.quad-yellow {
+  background: #fff1d6;
+  border: 3px solid #ffd787;
+}
+
+.quad-blue {
+  background: #e4f2ff;
+  border: 3px solid #98cdff;
+}
+
+.quad-green {
+  background: #e6f9ef;
+  border: 3px solid #8cffc2;
+}
+
+/* === Modal === */
 .modal {
   position: fixed;
   inset: 0;
@@ -173,10 +169,12 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  transition: opacity 0.3s ease;
 }
 
 .modal.show {
   display: flex;
+  opacity: 1;
 }
 
 .modal-content {
@@ -202,68 +200,7 @@ body {
   }
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.modal-header h2 {
-  font-size: 19px;
-  font-weight: 600;
-  color: #2d1f3d;
-  margin: 0;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 26px;
-  color: #888;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: 0.2s;
-}
-
-.close-btn:hover {
-  background: #f0f0f0;
-  color: #333;
-}
-
-.modal-subtitle {
-  color: #666;
-  font-size: 13px;
-  margin-bottom: 22px;
-  margin-top: 10px;
-}
-
-/* Form styling */
-.form-group {
-  margin-bottom: 18px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 500;
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 7px;
-}
-
-.required {
-  color: #e74c3c;
-}
-
+/* Form inside modal */
 .form-group input[type="text"],
 .form-group textarea {
   width: 100%;
@@ -278,153 +215,108 @@ body {
 
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
-  outline: none;
   border-color: #8b32ff;
   box-shadow: 0 0 0 3px rgba(139, 50, 255, 0.1);
 }
 
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* Dropdown styling */
+/* === Dropdown === */
 .dropdown-wrapper {
   position: relative;
 }
 
 .dropdown-btn {
-  width: 100%;
-  padding: 11px 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  background: white;
-  text-align: left;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: 0.2s;
-}
-
-.dropdown-btn:hover {
-  border-color: #c0c0c0;
-}
-
-.dropdown-btn.open {
-  border-color: #8b32ff;
-  box-shadow: 0 0 0 3px rgba(139, 50, 255, 0.1);
-}
-
-.dropdown-btn i {
-  transition: transform 0.3s;
-}
-
-.dropdown-btn.open i {
-  transform: rotate(180deg);
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: auto;
-  bottom: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-  opacity: 0;
-  z-index: 10;
-}
-
-.dropdown-menu.show {
-  max-height: 300px;
-  opacity: 1;
-}
-
-.dropdown-item {
-  padding: 12px 16px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background-color 0.2s, color 0.2s;
-  font-size: 14px;
-  color: #333;
-  background: white;
 }
 
-.dropdown-item i {
-  font-size: 16px;
-  color: transparent;
-  width: 20px;
-  flex-shrink: 0;
-  transition: color 0.2s;
+/* === Responsive === */
+@media (max-width: 1100px) {
+  .app-content {
+    padding: 30px;
+    margin-left: 0;
+  }
 }
 
-.dropdown-menu:not(:hover) .dropdown-item.active {
-  background: #a855f7;
-  color: white;
-}
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    padding: 16px 0;
+  }
 
-.dropdown-menu:not(:hover) .dropdown-item.active i {
-  color: white;
-}
+  .sidebar .nav-header {
+    justify-content: center !important;
+    padding-bottom: 24px;
+  }
 
-.dropdown-item.active i {
-  color: #333;
-}
+  .sidebar #menu-toggle {
+    display: block !important;
+  }
 
-.dropdown-item:hover {
-  background: #a855f7 !important;
-  color: white !important;
-}
+  .sidebar .app-title {
+    display: none;
+  }
 
-.dropdown-item:hover i {
-  color: white !important;
-}
+  .menu-item {
+    justify-content: center;
+    padding: 12px 0;
+  }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 24px;
-  gap: 12px;
-}
+  .menu-item .menu-text {
+    display: none;
+  }
 
-.cancel-btn,
-.save-btn {
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  font-family: 'Poppins', sans-serif;
-  transition: 0.2s;
-}
+  .sidebar.nav-open {
+    width: 260px;
+    padding: 24px 16px;
+    z-index: 1050;
+  }
 
-.cancel-btn {
-  background: #f0f0f0;
-  color: #555;
-}
+  .sidebar.nav-open .app-title {
+    display: block;
+  }
 
-.cancel-btn:hover {
-  background: #e0e0e0;
-}
+  .sidebar.nav-open .menu-item {
+    justify-content: flex-start;
+    padding: 10px 16px;
+  }
 
-.save-btn {
-  background: #8b32ff;
-  color: white;
-  padding: 10px 24px;
-}
+  .sidebar.nav-open .menu-item .menu-text {
+    display: inline;
+  }
 
-.save-btn:hover {
-  background: #7527e4;
-  box-shadow: 0 4px 12px rgba(139, 50, 255, 0.3);
+  .app-content {
+    margin-left: 70px;
+    padding: 18px;
+  }
+
+  .app-content.nav-pushed {
+    margin-left: 260px;
+  }
+
+  .matrix {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .quad {
+    min-height: 180px;
+    padding: 18px;
+  }
+
+  .add-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .footer {
+    margin-left: 70px;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    flex-direction: column;
+    padding: 20px;
+  }
 }
