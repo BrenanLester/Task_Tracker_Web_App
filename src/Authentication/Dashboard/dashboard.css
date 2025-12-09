@@ -1,168 +1,306 @@
 body {
-    background-color: #f6f2fc;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
+background: #f6f2fc;
+font-family: 'Poppins', sans-serif;
+color: #111827;
+margin: 0;
 }
 
+
+.sidebar, 
+.app-content {
+transition: margin-left .28s ease, width .28s ease, transform .28s ease, filter .28s ease; 
+}
+
+
 .sidebar {
-    width: 260px;
-    background-color: #3b1366;
-    min-height: 100vh;
-    color: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 25px 20px;
+width: 260px;
+background-color: #3b1366; 
+min-height: 100vh;
+color: #fff;
+position: fixed;
+top: 0;
+left: 0;
+display: flex;
+flex-direction: column;
+padding: 20px 15px;
 }
 
 .sidebar h5 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 30px;
+font-size: 20px; 
+font-weight: 700;
+margin-bottom: 25px; 
 }
 
-/* Menu items */
+
+.sidebar #menu-toggle {
+display: none;
+}
+.sidebar .app-title {
+display: block;
+}
+
+
+
 .menu-item {
-    padding: 12px 18px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    transition: 0.2s ease;
-    color: #e7dfff;
-    text-decoration: none;
+padding: 8px 15px; 
+border-radius: 50px; 
+margin-bottom: 5px;
+display: flex;
+align-items: center;
+gap: 10px; 
+font-size: 14px; 
+font-weight: 500;
+transition: 0.2s ease;
+color: #e7dfff; 
+text-decoration: none;
 }
 
 .menu-item i {
-    font-size: 20px;
+font-size: 18px; 
 }
 
-/* Active style */
 .menu-item.active {
-    background-color: #6d28d9;
-    color: #fff;
+background-color: #6d28d9; 
+color: #fff;
 }
 
-/* Hover */
+
 .menu-item:hover {
-    background-color: #7626db;
-    color: white;
+background-color: #7626db;
+color: white;
 }
 
 .sidebar .menu-item:last-child {
-    margin-top: auto;
+margin-top: auto;
 }
 
-/* Main Content */
-.content {
-    margin-left: 260px;
-    padding: 40px;
-    color: #4b3b63;
+/* MAIN CONTENT */
+.app-content {
+margin-left: 260px;
+padding: 40px;
+color: #4b3b63;
+min-height: 100vh;
 }
 
-/* Dashboard cards */
 .card-metric {
-    padding: 25px;
-    border-radius: 16px;
-    background: #fff;
-    color: #333;
-    border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s;
+padding: 25px;
+border-radius: 16px;
+background: #ffffff; 
+color: #333;
+border: none;
+box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-.card-metric:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+/*calendar box */
+.card-box {
+background: #ffffff; 
+padding: 20px;
+border-radius: 16px;
+box-shadow: 0 0 10px rgba(0,0,0,0.05);
+min-height: 500px; 
 }
 
-.card-metric h6 {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
+/* calendar */
+
+.minimalist-calendar-container {
+padding: 30px; 
 }
 
-.card-metric h2 {
-    margin: 0;
-    font-size: 2.5rem;
+.calendar-header {
+background-color: #f1e9fa; 
+color: #3b1366;
+font-size: 1.1rem;
+padding: 12px 15px !important;
+border-radius: 8px; 
 }
 
-.calendar-box {
-    background: #fff;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+.calendar-header .date-display {
+color: #3b1366; 
+}
+.calendar-header .navigation {
+color: #3b1366;
 }
 
-/* Activity Items */
-.activity-item {
-    padding: 12px;
-    border-left: 3px solid #6d28d9;
-    margin-bottom: 10px;
-    background: #f8f6fc;
-    border-radius: 4px;
+/* Calendar Grid */
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+text-align: center;
+gap: 15px 0; 
+margin-top: 25px;
 }
 
-.activity-item .task-title {
-    font-weight: 600;
-    color: #3b1366;
+.day-label {
+font-weight: 600; 
+color: #111827; 
+font-size: 0.95rem;
 }
 
-.activity-item .task-meta {
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 4px;
+.day-number {
+padding: 8px;
+font-weight: 500;
+color: #111827;
+cursor: pointer;
+width: 30px; 
+height: 30px; 
+line-height: 14px; 
+margin: 0 auto; 
+box-sizing: content-box; 
 }
 
-/* Priority Badges */
-.priority-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+.day-number.active-day {
+background-color: #6d28d9; 
+color: white;
+border-radius: 50%;
+font-weight: 600;
 }
 
-.priority-high {
-    background-color: #fee;
-    color: #c00;
+
+.blank-day {
+padding: 0;
+width: 30px;
+height: 30px;
+margin: 0 auto;
+cursor: default;
 }
 
-.priority-medium {
-    background-color: #ffeaa7;
-    color: #d63031;
+
+/* Time/Today */
+.calendar-divider {
+border-color: #f0ebf8; 
 }
 
-.priority-low {
-    background-color: #dfe6e9;
-    color: #2d3436;
+.time-footer {
+font-size: 1rem;
 }
 
-/* Status Badges */
-.status-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+.time-footer .time-label {
+color: #111827;
 }
 
-.status-pending {
-    background-color: #dfe6e9;
-    color: #636e72;
+.time-footer .time-separator {
+width: 2px;
+height: 30px;
+background-color: #6d28d9; 
 }
 
-.status-in-progress {
-    background-color: #dfe6ff;
-    color: #0984e3;
+.time-footer .current-time {
+font-size: 1.25rem;
+color: #111827;
+}
+.time-footer small {
+font-size: 0.75rem;
 }
 
-.status-completed {
-    background-color: #d4edda;
-    color: #155724;
+/* recent acts */
+.card-box .list-group-item {
+border: none;
+border-bottom: 1px solid #f0ebf8; 
+padding-left: 0;
+padding-right: 0;
+font-size: 0.95rem;
+}
+.card-box .list-group-item:last-child {
+border-bottom: none;
+}
+
+
+
+@media (max-width: 1100px) {
+.app-content {
+padding: 30px;
+margin-left: 0;
+}
+}
+
+
+@media (max-width: 768px) {
+/* Mini-Sidebar State */
+.sidebar { 
+    width: 70px; 
+    padding: 16px 0; 
+}
+.sidebar .nav-header { 
+    justify-content: center !important;
+    padding-bottom: 24px;
+}
+.sidebar #menu-toggle { 
+    display: block !important; 
+}
+.sidebar .app-title { 
+    display: none;
+}
+
+/* Collapsed menu item */
+.menu-item { 
+    justify-content: center;
+    padding: 12px 0;
+}
+.menu-item .menu-text { 
+    display: none; 
+}
+
+
+/* Expanded Sidebar State  */
+.sidebar.nav-open { 
+    width: 260px; 
+    padding: 24px 16px; 
+    z-index: 1050; 
+}
+.sidebar.nav-open .nav-header { 
+    justify-content: space-between !important;
+}
+.sidebar.nav-open .app-title { 
+    display: block; 
+}
+.sidebar.nav-open .menu-item { 
+    justify-content: flex-start;
+    padding: 10px 16px;
+}
+.sidebar.nav-open .menu-item .menu-text { 
+    display: inline;
+}
+
+/* HIDE hamburger icon when the menu is open on mobile */
+.sidebar.nav-open #menu-toggle {
+    display: none !important;
+}
+
+
+/* Content pushed by mini-sidebar (ALWAYS PUSHED 70px RIGHT ON MOBILE) */
+.app-content {
+    margin-left: 70px; 
+    padding: 18px; 
+}
+
+/* Content pushed by expanded sidebar */
+.app-content.nav-pushed {
+    margin-left: 260px; 
+}
+
+/* Responsive calendar adjustments */
+.calendar-grid {
+    gap: 8px 0;
+}
+.day-number {
+    padding: 5px;
+    width: 28px;
+    height: 28px;
+    line-height: 18px;
+}
+}
+
+
+
+.app-content.blur-content,
+.footer.blur-content {
+    filter: blur(4px); 
+    cursor: pointer; 
+    pointer-events: auto; 
+    user-select: none; 
+}
+
+
+.profile-shrink-mobile {
+    max-width: 250px;
 }

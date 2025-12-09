@@ -10,67 +10,181 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us - DebugMyDay</title>
-  <link rel="stylesheet" href="about.css">
+  <title>About Us</title>
 
-  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="about.css"> 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
 </head>
 <body>
+
+  <div class="progress-bar"></div>
+
+  <div class="sidebar" id="app-nav">
+    <div class="nav-header d-flex justify-content-between align-items-center">
+        <h5 class="app-title">DebugMyDay</h5>
+        <button id="menu-toggle" class="btn btn-sm text-white d-block d-md-none" type="button">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+    </div>
     
-  <!-- SIDEBAR -->
-<div class="sidebar">
-    <h5 class="fw-bold mb-4">DebugMyDay</h5>
+    <nav>
+        <a class="menu-item" href="../Dashboard/dashboard.php">
+            <i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span>
+        </a>
 
-    <a class="menu-item" href="../Dashboard/dashboard.php">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
+        <a class="menu-item" href="../Tasks/tasks.php">
+            <i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span>
+        </a>
 
-    <a class="menu-item" href="../Tasks/tasks.php">
-        <i class="bi bi-list-check"></i> Tasks
-    </a>
+        <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> <span class="menu-text">Profile</span></a>
+        <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
+        <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span></a>
+        <a class="menu-item active" href="about.php"><i class="bi bi-info-circle"></i> <span class="menu-text">About Us</span></a>
+    </nav>
+    
+    <a class="menu-item" href="../logout.php"><i class="bi bi-box-arrow-right"></i> <span class="menu-text">Logout</span></a>
 
-    <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> Profile</a>
-    <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> Pomodoro Timer</a>
-    <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> Settings</a>
-    <a class="menu-item active" href="about.php"><i class="bi bi-info-circle"></i> About Us</a>
+  </div>
+  <div class="app-content p-4 p-md-5">
+    
+    <header class="content-header d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="page-title fs-4 fw-bold">About DebugMyDay</h1>
+            <p class="page-sub text-muted fs-6">Learn more about our mission, vision, and the people behind the product.</p>
+        </div>
+    </header>
 
-    <a class="menu-item" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
-</div>
+    <div class="feature-list row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5 pt-2">
+        
+        <div class="col">
+            <div class="feature-item p-4 rounded-3 shadow-sm d-flex flex-column h-100">
+                <span class="kicker rounded-pill px-2 py-1 mb-2 d-inline-block">Our Mission</span>
+                <h3 class="fs-5 mt-0 mb-2"><i class="bi bi-bullseye"></i> Clarity & Focus</h3>
+                <p class="text-muted mb-0">Our goal is to eliminate digital clutter and provide users with the tools necessary to achieve deep work and mindful productivity, turning chaos into clarity.</p>
+            </div>
+        </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <h1 class="page-title">About DebugMyDay</h1>
-        <p class="subtitle">Your productivity companion</p>
+        <div class="col">
+            <div class="feature-item p-4 rounded-3 shadow-sm d-flex flex-column h-100">
+                <span class="kicker rounded-pill px-2 py-1 mb-2 d-inline-block">Our Vision</span>
+                <h3 class="fs-5 mt-0 mb-2"><i class="bi bi-lightbulb"></i> Seamless Integration</h3>
+                <p class="text-muted mb-0">We envision a world where productivity tools work together harmoniously, allowing users to spend less time managing apps and more time focusing on their tasks.</p>
+            </div>
+        </div>
 
-        <div class="about-card">
-            <h2>Welcome to DebugMyDay</h2>
-            <p>DebugMyDay is a comprehensive task management and productivity application designed to help you organize
-                your work, stay focused, and achieve your goals.</p>
+        <div class="col">
+            <div class="feature-item p-4 rounded-3 shadow-sm d-flex flex-column h-100">
+                <span class="kicker rounded-pill px-2 py-1 mb-2 d-inline-block">Our Approach</span>
+                <h3 class="fs-5 mt-0 mb-2"><i class="bi bi-award"></i> User-Centric Design</h3>
+                <p class="text-muted mb-0">Every feature is designed with the user's cognitive load in mind, ensuring a simple, elegant, and highly effective experience across all devices.</p>
+            </div>
+        </div>
 
-            <h3><i class="bi bi-star-fill"></i> Features</h3>
-            <ul>
-                <li><strong>Task Management:</strong> Organize tasks using the Eisenhower Matrix</li>
-                <li><strong>Pomodoro Timer:</strong> Stay focused with timed work sessions</li>
-                <li><strong>Dashboard:</strong> Track your productivity at a glance</li>
-                <li><strong>Calendar Integration:</strong> Never miss a deadline</li>
-            </ul>
+    </div>
+    
+    <div class="page-sections row g-4 mb-5">
+        
+        <div class="col-12">
+            <div class="story-section p-4 p-md-5 rounded-3 shadow-sm">
+                <span class="kicker rounded-pill px-2 py-1 mb-2 d-inline-block">Our Story</span>
+                <h3 class="fs-5 fw-bold mb-3">A Collaborative Academic Project</h3>
+                <p class="mb-4">DebugMyDay originated as a collaborative project by <b>Group 1</b> of <b>BSIS 2</b> at <b>La Verdad Christian College.</b>  It was developed specifically for the Responsive Web Design and Web Application Development course to apply our theoretical knowledge in creating a secure, efficient, and real-world task management platform.</p>
+                <p class="muted pt-4 mt-3 mb-0 text-center">The first step to managing a task is defining it clearly.</p>
+            </div>
+        </div>
 
-            <h3><i class="bi bi-bullseye"></i> Our Mission</h3>
-            <p>We believe that productivity should be simple, intuitive, and accessible to everyone. DebugMyDay helps
-                you debug your day by organizing tasks, managing time, and maintaining focus.</p>
+        <div class="col-12">
+            <div class="team-module p-3 p-md-4 rounded-3 shadow-sm text-center">
+                <h3 class="fs-5 fw-bold mb-4 mt-0">Meet our team </h3>
 
-            <h3><i class="bi bi-info-circle-fill"></i> Version</h3>
-            <p>Version 1.0.0 - Built with ❤️ for productivity enthusiasts</p>
+                <div class="team-members row g-4 justify-content-center">
+                    
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="member-profile rounded-1 shadow-sm d-flex flex-column h-100 mx-auto profile-shrink-mobile">
+                            <div class="profile-photo-wrapper position-relative overflow-hidden">
+                                <img src="" class="profile-photo" alt="Rocelyn Lava">
+                            </div>
+                            <div class="profile-details text-start p-3">
+                                <span class="member-role d-block fw-semibold mb-1">Front-End Dev / Project Manager</span>
+                                <span class="member-name d-block fs-6 mb-2">Rocelyn Lava</span>
+                                <p class="member-bio mb-0">Oversees project execution and leads the development of the user interface.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="member-profile rounded-1 shadow-sm d-flex flex-column h-100 mx-auto profile-shrink-mobile">
+                            <div class="profile-photo-wrapper position-relative overflow-hidden">
+                                <img src="" class="profile-photo" alt="Lorein Manluctao">
+                            </div>
+                            <div class="profile-details text-start p-3">
+                                <span class="member-role d-block fw-semibold mb-1">Front-End Dev / Docs & QA</span>
+                                <span class="member-name d-block fs-6 mb-2">Lorein Manluctao</span>
+                                <p class="member-bio mb-0">Contributes to the interface and handles documentation and quality assurance testing.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="member-profile rounded-1 shadow-sm d-flex flex-column h-100 mx-auto profile-shrink-mobile">
+                            <div class="profile-photo-wrapper position-relative overflow-hidden">
+                                <img src="" class="profile-photo" alt="Brenan Lester Espeleta">
+                            </div>
+                            <div class="profile-details text-start p-3">
+                                <span class="member-role d-block fw-semibold mb-1">Back-End Developer</span>
+                                <span class="member-name d-block fs-6 mb-2">Brenan Lester Espeleta</span>
+                                <p class="member-bio mb-0">Responsible for the core server-side logic and application architecture.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="member-profile rounded-1 shadow-sm d-flex flex-column h-100 mx-auto profile-shrink-mobile">
+                            <div class="profile-photo-wrapper position-relative overflow-hidden">
+                                <img src="" class="profile-photo" alt="Louise Buen">
+                            </div>
+                            <div class="profile-details text-start p-3">
+                                <span class="member-role d-block fw-semibold mb-1">Database Manager</span>
+                                <span class="member-name d-block fs-6 mb-2">Louise Buen</span>
+                                <p class="member-bio mb-0">Manages the design, implementation, and maintenance of the task data structure.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="member-profile rounded-1 shadow-sm d-flex flex-column h-100 mx-auto profile-shrink-mobile">
+                            <div class="profile-photo-wrapper position-relative overflow-hidden">
+                                <img src="" class="profile-photo" alt="Winston Gultiano">
+                            </div>
+                            <div class="profile-details text-start p-3">
+                                <span class="member-role d-block fw-semibold mb-1">JavaScript & Validation Specialist</span>
+                                <span class="member-name d-block fs-6 mb-2">Winston Gultiano</span>
+                                <p class="member-bio mb-0">Focuses on client-side functionality, interactivity, and input validation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    
 </div>
-<script src="../Shared/audioPlayer.js"></script>
+
+<footer class="footer p-4 p-md-3">
+    <div class="footer-wrapper d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <p>&copy; 2025 DebugMyDay. All rights reserved.</p>
+        <p class="footer-nav">
+            <a href="#" class="text-decoration-none mx-2">Privacy Policy</a> | 
+            <a href="#" class="text-decoration-none mx-2">Terms of Service</a>
+        </p>
+    </div>
+</footer>
+
+  <script src="about.js"></script>
+  <script src="../Shared/audioPlayer.js"></script>
 </body>
 </html>
