@@ -127,7 +127,7 @@ try {
             }
 
             $stmt = $pdo->prepare(
-                'UPDATE tasks SET title = ?, description = ?, priority = ?, due_date = ?, quadrant = ?, status = ? 
+                'UPDATE tasks SET title = ?, description = ?, priority = ?, due_date = ?, quadrant = ?, status = ?, updated_at = CURRENT_TIMESTAMP 
                  WHERE task_id = ?'
             );
             $stmt->execute([$title, $description, $priority, $due_date, $quadrant, $status, $id]);

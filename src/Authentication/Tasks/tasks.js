@@ -2,6 +2,70 @@ let currentQuadrant = null;
 let editingTaskId = null;
 let taskIdCounter = 0;
 
+// API helper - uses relative path to CRUD Task.php and includes credentials
+function api(path, opts = {}) {
+  const url = path.startsWith('http') ? path : ('../../CRUD/Task.php' + (path ? (path.startsWith('?') ? path : ('?' + path)) : ''));
+  const fetchOpts = Object.assign({
+    credentials: 'same-origin',
+    headers: {}
+  }, opts);
+
+  // If body is plain object, convert to URLSearchParams
+  if (fetchOpts.body && typeof fetchOpts.body === 'object' && !(fetchOpts.body instanceof FormData)) {
+    fetchOpts.body = new URLSearchParams(fetchOpts.body);
+    fetchOpts.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+  }
+
+  return fetch(url, fetchOpts).then(r => r.json());
+}
+
+// Load tasks from server and render
+function loadTasks() {
+  api('action=list', { method: 'GET' })
+    .then(data => {
+      if (!data || !data.success) return;
+      const tasks = data.tasks || [];
+      // Clear current lists
+      Object.keys(quadrantNames).forEach(q => {
+        const el = document.getElementById(q);
+        if (el) el.innerHTML = '';
+      });
+
+      if (tasks.length === 0) {
+        // show no-tasks in each quadrant
+        Object.keys(quadrantNames).forEach(q => {
+          const el = document.getElementById(q);
+          if (el && el.children.length === 0) el.innerHTML = '<p class="no-tasks">No tasks in this quadrant</p>';
+        });
+        return;
+      }
+
+      tasks.forEach(t => {
+        const list = document.getElementById(t.quadrant || 'others');
+        if (!list) return;
+
+        // Create task element with server id
+        taskIdCounter++;
+        const taskId = 'task-' + taskIdCounter;
+        const task = document.createElement('div');
+        task.className = 'task';
+        task.id = taskId;
+        task.dataset.title = t.title;
+        task.dataset.description = t.description || '';
+        task.dataset.subject = t.subject || '';
+        task.dataset.quadrant = t.quadrant || 'others';
+        task.dataset.completed = (t.status && t.status.toLowerCase() === 'completed') ? 'true' : 'false';
+        task.dataset.serverId = t.task_id;
+
+        task.innerHTML = createTaskHTML(taskId, t.title, t.description || '', t.subject || '', task.dataset.completed === 'true');
+        list.appendChild(task);
+      });
+    })
+    .catch(err => {
+      console.error('Failed to load tasks', err);
+    });
+}
+
 // Quadrant name mapping
 const quadrantNames = {
   'urgent-important': 'Important & Urgent',
@@ -118,13 +182,12 @@ function addTask() {
     noTasksMsg.remove();
   }
 
-  // Create unique task ID
+  // Optimistically create UI element and persist to server
   taskIdCounter++;
   const taskId = `task-${taskIdCounter}`;
 
-  // Create task element
   const task = document.createElement("div");
-  task.className = "task";
+  task.className = "task pending-save";
   task.id = taskId;
   task.dataset.title = taskTitle;
   task.dataset.description = taskDescription;
@@ -135,8 +198,39 @@ function addTask() {
   task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
   list.appendChild(task);
 
+  // Close modal immediately for UX
   closeModal();
-  showNotification("Task added successfully");
+
+  // Persist to server
+  api('action=create', {
+    method: 'POST',
+    body: {
+      title: taskTitle,
+      description: taskDescription,
+      subject: taskSubject,
+      quadrant: currentQuadrant,
+      priority: 'Medium',
+      due_date: '' ,
+      status: 'Pending'
+    }
+  }).then(resp => {
+    if (resp && resp.success) {
+      // Save server id on element and remove pending marker
+      task.dataset.serverId = resp.id || resp.inserted_id || resp.task_id || '';
+      task.classList.remove('pending-save');
+      showNotification('Task added successfully');
+      // Optionally refresh dashboard counts via redirect or small polling
+    } else {
+      // Remove optimistic element
+      task.remove();
+      showNotification('Failed to save task');
+      console.error('Create task failed', resp);
+    }
+  }).catch(err => {
+    task.remove();
+    showNotification('Failed to save task');
+    console.error('Create task error', err);
+  });
 }
 
 function createTaskHTML(taskId, title, description, subject, completed) {
@@ -314,4 +408,9 @@ document.addEventListener('keydown', function (event) {
       closeModal();
     }
   }
+});
+
+// Load tasks from server on page load
+document.addEventListener('DOMContentLoaded', function () {
+  loadTasks();
 });
