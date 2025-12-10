@@ -2,8 +2,6 @@ let currentQuadrant = null;
 let editingTaskId = null;
 let taskIdCounter = 0;
 
-const API_URL = '../../CRUD/Task.php';
-
 const quadrantNames = {
   'urgent-important': 'Important & Urgent',
   'important': 'Important but Not Urgent',
@@ -30,35 +28,6 @@ function saveTasksToStorage(tasks) {
   localStorage.setItem('eisenhowerTasks', JSON.stringify(tasks));
 }
 
-async function fetchTasksFromServer() {
-  try {
-    const res = await fetch(API_URL + '?action=list', { credentials: 'same-origin' });
-    if (!res.ok) throw new Error('Network error');
-    const data = await res.json();
-    if (data.success && data.tasks) return data.tasks;
-    return null;
-  } catch (e) {
-    console.error('Failed to fetch tasks from server:', e);
-    return null;
-  }
-}
-
-async function postToServer(payload) {
-  try {
-    const res = await fetch(API_URL + '?action=' + (payload.action || 'create'), {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(payload).toString()
-    });
-    if (!res.ok) throw new Error('Network error');
-    return await res.json();
-  } catch (e) {
-    console.error('Server request failed:', e);
-    return { success: false, message: e.message };
-  }
-}
-
 // Helper to display 'no tasks' message
 function showNoTasksMessage(quadrantId) {
     const list = document.getElementById(quadrantId);
@@ -67,49 +36,38 @@ function showNoTasksMessage(quadrantId) {
     }
 }
 
-async function loadTasks() {
-  // Try server first, fallback to localStorage
-  const serverTasks = await fetchTasksFromServer();
-  let tasks = serverTasks;
-  if (!tasks) tasks = getTasksFromStorage();
-
+function loadTasks() {
+  const tasks = getTasksFromStorage();
+  
   Object.keys(quadrantNames).forEach(q => {
     const el = document.getElementById(q);
     if (el) el.innerHTML = '';
   });
 
-  // If tasks came from server, use DB ids. Otherwise keep local ids.
-  const maxId = tasks.reduce((max, t) => {
-    const idPart = t.task_id ? String(t.task_id) : String(t.id || '0').split('-')[1] || '0';
-    return Math.max(max, parseInt(idPart || 0, 10));
-  }, 0);
+  // Set taskIdCounter higher than any existing ID
+  const maxId = tasks.reduce((max, t) => Math.max(max, parseInt(t.id.split('-')[1] || 0)), 0);
   taskIdCounter = maxId;
 
   tasks.forEach(t => {
-    const allowed = Object.keys(quadrantNames);
-    const quadrantKey = (t.quadrant && allowed.includes(t.quadrant)) ? t.quadrant : 'others';
-
-    const list = document.getElementById(quadrantKey);
+    const list = document.getElementById(t.quadrant || 'others');
     if (!list) return;
 
     const noTasksMsg = list.querySelector('.no-tasks');
     if (noTasksMsg) noTasksMsg.remove();
-
+    
     const task = document.createElement('div');
     task.className = 'task';
-    const idValue = t.task_id ? `task-${t.task_id}` : (t.id || `task-0`);
-    task.id = idValue;
+    task.id = t.id;
     task.dataset.title = t.title;
     task.dataset.description = t.description || '';
     task.dataset.subject = t.subject || '';
-    task.dataset.quadrant = quadrantKey;
-    const completed = (t.status && t.status.toLowerCase().includes('complete')) || t.completed;
-    task.dataset.completed = completed ? 'true' : 'false';
+    task.dataset.quadrant = t.quadrant || 'others';
+    task.dataset.completed = t.completed ? 'true' : 'false';
 
-    task.innerHTML = createTaskHTML(idValue, t.title, t.description || '', t.dataset.subject, completed);
+    task.innerHTML = createTaskHTML(t.id, t.title, t.description || '', t.subject || '', t.completed);
     list.appendChild(task);
   });
-
+  
   Object.keys(quadrantNames).forEach(showNoTasksMessage);
 }
 
@@ -163,48 +121,41 @@ function addTask() {
     return;
   }
 
-  // Ensure we have a valid quadrant; fallback to 'others'
-  const allowed = Object.keys(quadrantNames);
-  const quadrantToUse = (currentQuadrant && allowed.includes(currentQuadrant)) ? currentQuadrant : 'others';
-
-  const list = document.getElementById(quadrantToUse);
-  if (!list) return; // defensive
+  const list = document.getElementById(currentQuadrant);
 
   const noTasksMsg = list.querySelector('.no-tasks');
-  if (noTasksMsg) noTasksMsg.remove();
+  if (noTasksMsg) {
+    noTasksMsg.remove();
+  }
 
-  // Try to create on the server
-  (async () => {
-    const payload = {
-      action: 'create',
-      title: taskTitle,
-      description: taskDescription,
-      subject: taskSubject,
-      quadrant: quadrantToUse
-    };
-    const res = await postToServer(payload);
-    if (res && res.success && res.id) {
-      const serverId = res.id;
-      const taskId = `task-${serverId}`;
-      const task = document.createElement("div");
-      task.className = "task";
-      task.id = taskId;
-      task.dataset.title = taskTitle;
-      task.dataset.description = taskDescription;
-      task.dataset.subject = taskSubject;
-      task.dataset.quadrant = quadrantToUse;
-      task.dataset.completed = "false";
+  taskIdCounter++;
+  const taskId = `task-${taskIdCounter}`;
 
-      task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
-      list.appendChild(task);
+  const task = document.createElement("div");
+  task.className = "task";
+  task.id = taskId;
+  task.dataset.title = taskTitle;
+  task.dataset.description = taskDescription;
+  task.dataset.subject = taskSubject;
+  task.dataset.quadrant = currentQuadrant;
+  task.dataset.completed = "false";
 
-      closeModal();
-      showNotification('Task added successfully', 'success');
-    } else {
-      showNotification('Error: ' + (res?.message || 'Failed to save task'), 'error');
-      closeModal();
-    }
-  })();
+  task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
+  list.appendChild(task);
+
+  closeModal();
+  showNotification('Task added successfully', 'success'); 
+
+  const tasks = getTasksFromStorage();
+  tasks.push({
+    id: taskId,
+    title: taskTitle,
+    description: taskDescription,
+    subject: taskSubject,
+    quadrant: currentQuadrant,
+    completed: false
+  });
+  saveTasksToStorage(tasks);
 }
 
 function createTaskHTML(taskId, title, description, subject, completed) {
@@ -247,24 +198,18 @@ function toggleComplete(taskId) {
     titleElement.classList.remove('completed');
   }
   
-  // Persist change on server if possible
-  const numericId = (taskId || '').split('-')[1];
-  const title = task.dataset.title;
-  const description = task.dataset.description;
-  const subject = task.dataset.subject;
-
-  (async () => {
-    if (numericId && !isNaN(numericId)) {
-      const res = await postToServer({ action: 'update', id: numericId, title, description, subject, quadrant: task.dataset.quadrant, status: isCompleted ? 'Completed' : 'Pending' });
-      if (res && res.success) {
-        if (isCompleted) showNotification("Task marked complete", 'success');
-        else showNotification("Task marked incomplete", 'error');
-        return;
-      }
+  const tasks = getTasksFromStorage();
+  const taskIndex = tasks.findIndex(t => t.id === taskId);
+  if (taskIndex !== -1) {
+    tasks[taskIndex].completed = isCompleted;
+    saveTasksToStorage(tasks);
+    
+    if (isCompleted) {
+        showNotification("Task marked complete", 'success');
+    } else {
+        showNotification("Task marked incomplete", 'error');
     }
-    if (isCompleted) showNotification("Task marked complete", 'success');
-    else showNotification("Task marked incomplete", 'error');
-  })();
+  }
 }
 
 function editTask(taskId) {
@@ -301,34 +246,23 @@ function updateTask() {
   const task = document.getElementById(editingTaskId);
   const completed = task.dataset.completed === "true";
 
-  // If the task came from server it will have id like 'task-<num>'
-  const numericId = (editingTaskId || '').split('-')[1];
+  task.dataset.title = taskTitle;
+  task.dataset.description = taskDescription;
+  task.dataset.subject = taskSubject;
 
-  (async () => {
-    if (numericId && !isNaN(numericId)) {
-      const payload = {
-        action: 'update',
-        id: numericId,
-        title: taskTitle,
-        description: taskDescription,
-        subject: taskSubject,
-        quadrant: currentQuadrant || task.dataset.quadrant || 'others',
-        status: completed ? 'Completed' : 'Pending'
-      };
-      const res = await postToServer(payload);
-      if (res && res.success) {
-        task.dataset.title = taskTitle;
-        task.dataset.description = taskDescription;
-        task.dataset.subject = taskSubject;
-        task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
-        closeModal();
-        showNotification("Task updated successfully", 'info');
-        return;
-      }
-    }
-    showNotification("Error updating task", 'error');
-    closeModal();
-  })();
+  task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
+
+  closeModal();
+  showNotification("Task updated successfully", 'info'); 
+  
+  const tasks = getTasksFromStorage();
+  const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+  if (taskIndex !== -1) {
+    tasks[taskIndex].title = taskTitle;
+    tasks[taskIndex].description = taskDescription;
+    tasks[taskIndex].subject = taskSubject;
+    saveTasksToStorage(tasks);
+  }
 }
 
 function deleteTask(taskId) {
@@ -339,24 +273,13 @@ function deleteTask(taskId) {
   const task = document.getElementById(taskId);
   const quadrant = task.dataset.quadrant;
 
-  const numericId = (taskId || '').split('-')[1];
+  task.remove();
 
-  (async () => {
-    if (numericId && !isNaN(numericId)) {
-      const res = await postToServer({ action: 'delete', id: numericId });
-      if (res && res.success) {
-        task.remove();
-        showNoTasksMessage(quadrant);
-        showNotification("Task deleted", 'error');
-        return;
-      }
-    }
-
-    // Fallback: remove locally
-    task.remove();
-    showNoTasksMessage(quadrant);
-    showNotification("Task deleted", 'error');
-  })();
+  showNoTasksMessage(quadrant);
+  showNotification("Task deleted", 'error'); 
+  
+  const tasks = getTasksFromStorage().filter(t => t.id !== taskId);
+  saveTasksToStorage(tasks);
 }
 
 function showNotification(message, type = 'success') {
@@ -389,6 +312,14 @@ document.addEventListener('keydown', function (event) {
       closeModal();
     }
   }
+});
+
+// Dark Mode
+document.addEventListener("DOMContentLoaded", function () {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+    }
 });
 
 // Load tasks from server on page load

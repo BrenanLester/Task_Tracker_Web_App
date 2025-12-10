@@ -57,7 +57,7 @@
         // Stores a reference on `window._audioHostWindow` and exposes helpers to control it.
         window.openAudioHost = function ({file, time = 0, play = false} = {}) {
             try {
-                const hostUrl = new URL('../Shared/audio_host.php', location.href).toString();
+                const hostUrl = new URL('/Task_Tracker_Web_App/src/Authentication/Shared/audio_host.php', location.origin).toString();
                 // Use a named window so repeated calls reuse it
                 const w = window.open(hostUrl, 'debugmyday-audio', 'width=340,height=80');
                 if (!w) return null;
@@ -157,7 +157,7 @@
                     window.openAudioHost({ file: localStorage.getItem('selectedMusic') || null, time: parseFloat(localStorage.getItem('musicCurrentTime')) || 0, play: true });
                 } else {
                     // fallback: try opening directly
-                    window.open('../Shared/audio_host.php', 'debugmyday-audio', 'width=340,height=80');
+                    window.open('/Task_Tracker_Web_App/src/Authentication/Shared/audio_host.php', 'debugmyday-audio', 'width=340,height=80');
                 }
                 // remove button after opening
                 setTimeout(()=>{ try{ btn.remove(); }catch(e){} }, 800);

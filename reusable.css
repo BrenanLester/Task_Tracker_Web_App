@@ -1,0 +1,254 @@
+/* ===========================
+   REUSABLE SYNTAX FOR SIDEBAR
+=========================== */
+
+body {
+  background-color: #f6f2fc;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #3b1366; 
+  min-height: 100vh;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 15px;
+}
+
+.sidebar h5 {
+  font-size: 20px; 
+  font-weight: 700;
+  margin-bottom: 25px; 
+}
+
+/* Menu items */
+.menu-item {
+ 
+  padding: 8px 15px; 
+  border-radius: 50px; 
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  font-size: 14px; 
+  font-weight: 500;
+  transition: 0.2s ease;
+  color: #e7dfff;
+  text-decoration: none;
+}
+
+.menu-item i {
+  font-size: 18px; 
+}
+
+.menu-item.active {
+  background-color:  #6d28d9 ; 
+  color: #fff;
+}
+
+/* Hover */
+.menu-item:hover {
+  background-color: #7626db;
+  color: white;
+}
+
+.sidebar .menu-item:last-child {
+  margin-top: auto;
+}
+/* ===========================
+   DARK MODE
+=========================== */
+body.dark {
+  background-color: #1a1a1a;
+  color: #eaeaea;
+}
+
+/* Sidebar Dark */
+body.dark .sidebar {
+  background-color: #2b0f4a;
+  color: #fff;
+}
+
+body.dark .menu-item {
+  color: #d9caff;
+}
+
+body.dark .menu-item:hover {
+  background-color: #4b1580;
+}
+
+body.dark .menu-item.active {
+  background-color: #5e20a8;
+}
+
+/* Content Dark */
+body.dark .content {
+  color: #eaeaea;
+}
+
+body.dark .page-title {
+  color: #d9caff;
+}
+
+body.dark .subtitle,
+body.dark .p{
+  color: #b8a3d9;
+}
+
+body.dark .setting-item .form-text {
+    color: #c9b7ff; /* light purple for dark mode */
+}
+
+body.dark .settings-card, 
+body.dark .pomo-card,
+body.dark .mode-btn{
+  background: #2a2a2a;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+body.dark .settings-card h2,
+body.dark .mb,
+body.dark .mb-3 {
+  color: #d9caff;
+  border-bottom-color: #5e20a8;
+}
+
+body.dark .setting-item label {
+  color: #c9b7ff;
+}
+
+body.dark .form-select,
+body.dark .form-control,
+body.dark .start-btn,
+body.dark .reset-btn{
+  background: #1e1e1e;
+  color: #eaeaea;
+  border-color: #7649c9;
+}
+
+body.dark .btn-save {
+  background: #6b2ed8;
+}
+
+body.dark .btn-save:hover {
+  background: #5e20a8;
+}
+/* ======================================= */
+/* DARK MODE OVERRIDES (DASHBOARD & CARDS) */
+/* Mas Malakas na Specificity */
+/* ======================================= */
+
+/* --- APP CONTENT & GENERAL TEXT --- */
+body.dark .app-content {
+    color: #ffffff !important; 
+}
+
+/* Titles and Subtitles */
+body.dark .app-content h2,
+body.dark .app-content h5 {
+    color: #ffffff !important;
+}
+
+body.dark .app-content .text-muted {
+    color: #cccccc !important;
+}
+
+/* --- CARD CONTAINERS (Ito ang nagko-conflict) --- */
+
+/* I-override ang general Bootstrap .card class */
+body.dark .card {
+    background-color: #242424 !important;
+    border: 1px solid #444444 !important;
+    color: #ffffff !important; 
+}
+
+/* Specific overrides for Metric and Box */
+body.dark .card-metric,
+body.dark .card-box {
+    background: #242424 !important; /* Dark charcoal background */
+    color: #ffffff !important; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); 
+    border: 1px solid #444444 !important; 
+}
+
+/* Metric text colors (Titles and Values) */
+body.dark .card-metric h6,
+body.dark .card-metric h2 {
+    color: #ffffff !important;
+}
+
+/* Ensure colored Bootstrap classes are visible on dark background */
+body.dark .card-metric .text-warning {
+    color: #ffc107 !important; 
+}
+body.dark .card-metric .text-success {
+    color: #28a745 !important;
+}
+
+/* --- CALENDAR --- */
+body.dark .calendar-header {
+    background-color: #3b1366 !important; /* Dark purple background */
+    color: #ffffff !important;
+}
+
+body.dark .calendar-header .date-display,
+body.dark .calendar-header .navigation {
+    color: #ffffff !important;
+}
+
+body.dark .day-label,
+body.dark .day-number {
+    color: #ffffff !important;
+}
+
+body.dark .day-number.active-day {
+    background-color: #6d28d9 !important; 
+    color: white !important;
+}
+
+body.dark .calendar-divider {
+    border-color: #444444 !important; 
+}
+
+body.dark .time-footer .time-label,
+body.dark .time-footer .current-time {
+    color: #ffffff !important;
+}
+
+body.dark .time-footer small {
+    color: #cccccc !important;
+}
+
+/* --- RECENT ACTIVITY LIST (List Group Items) --- */
+
+/* Force all list items to have dark-friendly background/text */
+body.dark .list-group-item {
+    background-color: transparent !important; 
+    border-bottom: 1px solid #333333 !important; 
+    color: #cccccc !important; 
+}
+
+body.dark .list-group-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Ensure icons/specific colors are correct */
+body.dark .list-group-item .text-success {
+    color: #28a745 !important; 
+}
+body.dark .list-group-item .text-primary {
+    color: #007bff !important; 
+}
+body.dark .list-group-item .text-warning {
+    color: #ffc107 !important;
+}
+body.dark .list-group-item .text-secondary {
+    color: #a0a0a0 !important;
+}
+/* ======================================= */

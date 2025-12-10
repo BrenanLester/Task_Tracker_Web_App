@@ -1,176 +1,108 @@
-body {
-  background-color: #f6f2fc;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-}
-
-/* SIDEBAR (Desktop Style) */
-.sidebar {
-  width: 260px;
-  background-color: #3b1366;
-  min-height: 100vh;
-  color: #fff;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 25px 20px;
-}
-
-.sidebar .app-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 30px;
-}
-
-.menu-item {
-  padding: 12px 18px;
-  border-radius: 10px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 15px;
-  font-weight: 500;
-  transition: 0.2s ease;
-  color: #e7dfff;
-  text-decoration: none;
-}
-
-.menu-item i {
-  font-size: 20px;
-}
-
-.menu-item.active {
-  background-color: #6d28d9;
-  color: #fff;
-}
-
-.menu-item:hover {
-  background-color: #7626db;
-  color: #fff;
-}
-
-.sidebar .menu-item:last-child {
-  margin-top: auto;
-}
-
-/* MAIN CONTENT */
-.app-content {
+/* ===== MAIN CONTENT ===== */
+.app-content,
+.main,
+.content {
   margin-left: 260px;
-  color: #4b3b63;
+  min-height: 100vh;
+  padding: 40px;
+  transition: margin-left .28s ease, filter .28s ease;
+}
+
+/* ===== SETTINGS CARD ===== */
+.settings-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto 30px auto;
 }
 
 .page-title {
-  font-size: 32px;
-  font-weight: 700;
-  color: #3b1366;
-  margin-bottom: 5px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #3b1366;
+    margin-bottom: 5px;
 }
 
-.settings-card {
-  background: #fff;
-  padding: 40px;
-  border-radius: 16px;
-  max-width: 700px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+.subtitle {
+    color: #7b6f92;
+    margin-bottom: 30px;
 }
 
-.settings-card h2 {
-  color: #3b1366;
-  font-size: 20px;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #e9ddff;
+.settings-card .d-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.settings-card .form-check-input {
+    cursor: pointer;
+    width: 2.5em;
+    height: 1.2em;
+}
+
+.settings-card h3:first-child {
+    margin-top: 0;
 }
 
 .setting-item {
-  margin-bottom: 25px;
+    margin-bottom: 25px;
 }
 
 .setting-item label {
-  display: block;
-  color: #5e3aac;
-  font-weight: 500;
-  margin-bottom: 8px;
+    display: block;
+    color: #5e3aac;
+    font-weight: 500;
+    margin-bottom: 8px;
 }
 
-.setting-item .form-control,
-.setting-item .form-select {
-  border: 1px solid #d8cfff;
-  border-radius: 10px;
-  padding: 10px 15px;
+.setting-item .form-select,
+.setting-item .form-control {
+    border: 1px solid #d8cfff;
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #4b3b63;
+}
+
+.setting-item .form-text {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+}
+
+.setting-item .form-select:focus,
+.setting-item .form-control:focus {
+    border-color: #8b32ff;
+    box-shadow: 0 0 0 0.2rem rgba(139, 50, 255, 0.15);
 }
 
 .form-check-input:checked {
-  background-color: #8b32ff;
-  border-color: #8b32ff;
+    background-color: #8b32ff;
+    border-color: #8b32ff;
+}
+
+.save-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ddff;
 }
 
 .btn-save {
-  padding: 12px 30px;
-  background: #8b32ff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
+    padding: 12px 30px;
+    background: #8b32ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: 0.2s ease;
 }
 
 .btn-save:hover {
-  background: #7626db;
-  transform: translateY(-2px);
-}
-
-/* MOBILE SIDEBAR SYSTEM (matches dashboard & pomodoro) */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 70px;
-    padding: 16px 0;
-  }
-
-  .sidebar .app-title {
-    display: none;
-  }
-
-  .menu-item {
-    justify-content: center;
-  }
-
-  .menu-item .menu-text {
-    display: none;
-  }
-
-  .sidebar.nav-open {
-    width: 260px;
-    padding: 24px 16px;
-    z-index: 1050;
-  }
-
-  .sidebar.nav-open .app-title {
-    display: block;
-  }
-
-  .sidebar.nav-open .menu-item {
-    justify-content: flex-start;
-  }
-
-  .sidebar.nav-open .menu-text {
-    display: inline;
-  }
-
-  .app-content {
-    margin-left: 70px;
-  }
-
-  .app-content.nav-pushed {
-    margin-left: 260px;
-  }
-
-  .app-content.blur-content {
-    filter: blur(4px);
-    cursor: pointer;
-  }
+    background: #7626db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 50, 255, 0.3);
 }

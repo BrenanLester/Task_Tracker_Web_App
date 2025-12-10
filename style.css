@@ -1,13 +1,23 @@
-/* 🌸 Pastel Purple Palette */
 :root {
-    --pp-lightest: #f7e8ff; 
-    --pp-lighter:  #e9d7ff;
-    --pp-light:    #d7c9ff;
-    --pp-main:     #bda4ff;
-    --pp-medium:   #a98aff;
-    --pp-dark:     #8c72cc;
-    --pp-darker:   #6e4c9f;
-    --pp-text:     #4a3b70;
+    /* Base Color: Mula sa Sidebar background */
+    --pp-darkest:  #3b1366; 
+
+    /* Primary Accent Color: Mula sa Active Menu Item */
+    --pp-main:     #6d28d9; 
+
+    /* Lighter Shade: Mula sa Hover Menu Item */
+    --pp-medium:   #7626db; 
+
+    /* Very Dark Text Color (Medyo inayos para mas readable) */
+    --pp-text:     #4b3b63; 
+
+    /* Lighter Colors for Background/Inputs - Derived from the Body/Sidebar palette */
+    --pp-lightest: #f6f2fc; /* Mula sa Body background */
+    --pp-lighter:  #e7dfff; /* Mula sa Light Sidebar Text (e.g. Input BG) */
+    --pp-light:    #d9cfff; /* Isang shade sa gitna */
+    --pp-dark:     #5e3aac; /* Darker accent, para sa icons/placeholder */
+    --pp-darker:   #3b1366; /* Same as --pp-darkest, para sa H1 */
+    
     --pp-white:    #ffffff;
 }
 
@@ -317,23 +327,7 @@ form {
         padding: 20px;
     }
 
-    .toggle-panel  {
+    .toggle-panel  {
         font-size: 30px;
     }
-}
-
-/* Code ni Winston sa Error Validation*/
-.form-error,
-.form-success {
-    font-size: 14px;
-    line-height: 1.2;
-}
-
-.form-error {
-    text-align: center;
-    color: #d9534f
-}
-
-.form-success {
-    color: #28a745
 }

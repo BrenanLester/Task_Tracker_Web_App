@@ -25,9 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Check for redirect parameter
             $redirect = $_POST['redirect'] ?? '';
             if ($redirect === 'about') {
-                header("Location: About/about.php");
+                header("Location: ../About/about.php");
             } else {
-                header("Location: Dashboard/dashboard.php");
+                header("Location: ../Dashboard/dashboard.php");
             }
             exit;
         } else {

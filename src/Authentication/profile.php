@@ -1,110 +1,10 @@
-<?php
-require __DIR__ . '/../Database/db.php';
-session_start();
-if (!isset($_SESSION["user_id"])) {
-    header("Location: login.php");
-    exit;
-}
-
-$user_id = $_SESSION["user_id"];
-$message = "";
-$error = "";
-
-// Get current user data
-$stmt = $pdo->prepare("SELECT name, email FROM users WHERE user_id = ?");
-$stmt->execute([$user_id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] === 'update') {
-          // Update profile (name/email) and optionally change password
-          $name = trim($_POST["name"]);
-          $email = trim($_POST["email"]);
-          $current_password = trim($_POST['current_password'] ?? '');
-          $new_password = trim($_POST['new_password'] ?? '');
-          $verify_password = trim($_POST['verify_password'] ?? '');
-
-          if (!$name || !$email) {
-            $error = "Name and email are required.";
-          } else {
-            // Check if email is already taken by another user
-            $check = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
-            $check->execute([$email, $user_id]);
-            if ($check->fetch()) {
-              $error = "This email is already taken by another user.";
-            } else {
-              // If any password field filled, perform password change validation
-              $changingPassword = ($current_password !== '' || $new_password !== '' || $verify_password !== '');
-
-              if ($changingPassword) {
-                // All three must be provided
-                if ($current_password === '' || $new_password === '' || $verify_password === '') {
-                  $error = "To change your password, fill current, new, and verify fields.";
-                } else {
-                  // Fetch current hashed password
-                  $stmt = $pdo->prepare("SELECT password FROM users WHERE user_id = ?");
-                  $stmt->execute([$user_id]);
-                  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                  if (!$row || !password_verify($current_password, $row['password'])) {
-                    $error = "Current password is incorrect.";
-                  } elseif ($new_password !== $verify_password) {
-                    $error = "New password and verification do not match.";
-                  } elseif (strlen($new_password) < 8) {
-                    $error = "New password must be at least 8 characters.";
-                  } else {
-                    // All good — update name, email and password
-                    $hash = password_hash($new_password, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, password = ? WHERE user_id = ?");
-                    $stmt->execute([$name, $email, $hash, $user_id]);
-
-                    // Update session and user variable
-                    $_SESSION["name"] = $name;
-                    $message = "Profile and password updated successfully!";
-                    $user = ["name" => $name, "email" => $email];
-                  }
-                }
-              } else {
-                // No password change requested — update name/email only
-                $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE user_id = ?");
-                $stmt->execute([$name, $email, $user_id]);
-                $_SESSION["name"] = $name;
-                $message = "Profile updated successfully!";
-                $user = ["name" => $name, "email" => $email];
-              }
-            }
-          }
-        } elseif ($_POST['action'] === 'delete') {
-            // Delete account
-            $password = trim($_POST["password"] ?? "");
-            
-            // Verify password before deletion
-            $stmt = $pdo->prepare("SELECT password FROM users WHERE user_id = ?");
-            $stmt->execute([$user_id]);
-            $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!password_verify($password, $user_data['password'])) {
-                $error = "Incorrect password. Account not deleted.";
-            } else {
-                // Delete user (cascades to all related data)
-                $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
-                $stmt->execute([$user_id]);
-                
-                session_destroy();
-                header("Location: ../../index.html");
-                exit;
-            }
-        }
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>DebugMyDay - My Profile</title>
-    
+      <link rel="stylesheet" href="../../reusable.css"> 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     
@@ -115,73 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            background-color: #f6f2fc;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        /* Sidebar - Matching Dashboard */
-        /* === Base Styles === */
-body {
-  background-color: #f6f2fc;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-}
-
-/* === Sidebar === */
-.sidebar {
-  width: 260px;
-  background-color: #3b1366;
-  min-height: 100vh;
-  color: #fff;
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  padding-top: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease, transform 0.3s ease;
-}
-
-.sidebar h5 {
-  font-weight: 700;
-  font-size: 20px;
-  margin-bottom: 25px;
-  padding-left: 20px;
-}
-
-/* Sidebar Links */
-.sidebar a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.menu-item {
-  padding: 12px 20px;
-  border-radius: 8px;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-  transition: 0.3s;
-  font-weight: 500;
-  font-size: 15px;
-}
-
-.menu-item:hover {
-  background-color: rgba(109, 40, 217, 0.5);
-}
-
-.menu-item i {
-  font-size: 20px;
-}
-
-.menu-item.active {
-  background-color: #6d28d9 !important;
-  font-weight: 600;
-}
 
 /* Main Content */
 .content {
@@ -418,7 +251,106 @@ button {
   display: inline-block;
   width: 100px;
 }
+/* ======================================= */
+/* DARK MODE OVERRIDES (PROFILE PAGE ONLY) */
+/* High Contrast Black/Gray Theme */
+/* ======================================= */
 
+/* --- PROFILE CONTAINER --- */
+body.dark .profile-container {
+    background: #242424; /* Dark charcoal gray */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .profile-header h1 {
+    color: #ffffff; /* Pure White text */
+}
+
+body.dark .profile-header {
+    border-bottom: 2px solid #444444; /* Darker separator */
+}
+
+/* --- TABS --- */
+body.dark .tabs {
+    border-bottom: 2px solid #444444;
+}
+
+body.dark .tab-btn {
+    color: #a0a0a0;
+}
+
+body.dark .tab-btn.active {
+    color: #8b5cf6; /* Primary purple color */
+    border-bottom-color: #8b5cf6;
+}
+
+body.dark .tab-btn:hover {
+    color: #6d28d9;
+}
+
+/* --- FORMS & USER INFO --- */
+body.dark .form-label {
+    color: #cccccc; /* Light text for form labels */
+}
+
+body.dark .form-control {
+    background-color: #333333; /* Input background */
+    color: #ffffff;
+    border: 2px solid #555555;
+}
+
+body.dark .form-control:focus {
+    border-color: #8b5cf6; /* Primary color focus */
+    box-shadow: 0 0 0 0.25rem rgba(139, 92, 246, 0.2);
+    background-color: #333333; /* Keep background consistent on focus */
+}
+
+body.dark .user-info {
+    background: #333333; /* Background for user details */
+    border: 2px solid #555555;
+}
+
+body.dark .user-info strong {
+    color: #cccccc;
+}
+
+/* --- BUTTONS (Secondary only needs override) --- */
+body.dark .btn-secondary {
+    background: #555555;
+    color: #ffffff;
+}
+
+body.dark .btn-secondary:hover {
+    background: #666666;
+}
+
+/* --- MESSAGES & WARNINGS --- */
+body.dark .message.success {
+    /* Dark green */
+    background: #225c3f;
+    color: #a3e6a3;
+    border: 2px solid #4a8069;
+}
+
+body.dark .message.error {
+    /* Dark red */
+    background: #6b3a3a;
+    color: #f7a3a3;
+    border: 2px solid #995454;
+}
+
+body.dark .warning-box {
+    /* Dark yellow/orange */
+    background: #6b5a3a;
+    border: 2px solid #998354;
+    color: #e6d8a3;
+}
+
+/* --- DELETE CONFIRMATION --- */
+body.dark .delete-confirm {
+    background: #6b3a3a;
+    border: 2px solid #995454;
+}
 /* === Responsive === */
 @media (max-width: 1100px) {
   .content {
@@ -477,15 +409,14 @@ button {
   <!-- Sidebar -->
   <div class="sidebar p-3">
     <h5 class="fw-bold mb-4">DebugMyDay</h5>
-    <a class="menu-item" href="Dashboard/dashboard.php"><i class="bi bi-speedometer2"></i> <span class="text">Dashboard</span></a>
-    <a class="menu-item" href="Tasks/tasks.php"><i class="bi bi-list-check"></i> <span class="text">Tasks</span></a>
-    <a class="menu-item active" href="profile.php"><i class="bi bi-person-circle"></i> <span class="text">Profile</span></a>
-    <a class="menu-item" href="Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="text">Pomodoro Timer</span></a>
-    <a class="menu-item" href="Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="text">Settings</span></a>
-    <a class="menu-item" href="About/about.php"><i class="bi bi-info-circle"></i> <span class="text">About Us</span></a>
-
+    <a class="menu-item" href="../Dashboard/dashboard.php"><i class="bi bi-speedometer2"></i> <span class="text">Dashboard</span></a>
+    <a class="menu-item" href="../Tasks/tasks.php"><i class="bi bi-list-check"></i> <span class="text">Tasks</span></a>
+    <a class="menu-item active" href="../profile.php"><i class="bi bi-person-circle"></i> <span class="text">Profile</span></a>
+    <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="text">Pomodoro Timer</span></a>
+    <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="text">Settings</span></a>
+    <a class="menu-item" href="../About/about.php"><i class="bi bi-info-circle"></i> <span class="text">About Us</span></a>
     <div class="mt-auto pt-3">
-      <a class="menu-item" href="logout.php"><i class="bi bi-box-arrow-right"></i> <span class="text">Logout</span></a>
+      <a class="menu-item" href="../logout.php"><i class="bi bi-box-arrow-right"></i> <span class="text">Logout</span></a>
     </div>
   </div>
 
@@ -496,21 +427,6 @@ button {
             <h1><i class="bi bi-person-circle"></i> My Profile</h1>
             <p class="text-muted">Manage your account settings and preferences</p>
         </div>
-
-        <?php if ($message): ?>
-            <div class="message success">
-                <i class="bi bi-check-circle-fill"></i>
-                <?php echo htmlspecialchars($message); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($error): ?>
-            <div class="message error">
-                <i class="bi bi-exclamation-circle-fill"></i>
-                <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
-
         <!-- Single merged page: profile edit form followed by delete-account section -->
 
         <!-- Edit Profile Tab -->
@@ -529,7 +445,7 @@ button {
                 </div>
 
                 <hr />
-                <h5 style="color:#3b1366; margin-bottom:12px;">Update Password</h5>
+                <h5 style="margin-bottom:12px;">Update Password</h5>
                 <p class="text-muted" style="margin-top:-8px; margin-bottom:12px; font-size:0.95rem;">Leave blank to keep your current password.</p>
 
                 <div class="mb-3">
@@ -627,7 +543,13 @@ button {
         const confirmBox = document.getElementById('deleteConfirm');
         confirmBox.classList.toggle('show');
     }
+       document.addEventListener("DOMContentLoaded", function () {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+    }
+    });
   </script>
-  <script src="Shared/audioPlayer.js"></script>
+  <script src="../Shared/audioPlayer.js"></script>
 </body>
 </html>

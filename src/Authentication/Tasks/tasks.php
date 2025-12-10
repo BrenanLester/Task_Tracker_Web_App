@@ -14,6 +14,7 @@ $current_user = $_SESSION['user']['username'] ?? $_SESSION['name'] ?? 'User';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tasks</title>
+  <link rel="stylesheet" href="../../reusable.css">
   <link rel="stylesheet" href="tasks.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -31,7 +32,7 @@ $current_user = $_SESSION['user']['username'] ?? $_SESSION['name'] ?? 'User';
 
     <nav>
         <a class="menu-item" href="../Dashboard/dashboard.php"><i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span></a>
-        <a class="menu-item active" href="tasks.php"><i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span></a>
+        <a class="menu-item active" href="../Tasks/tasks.php"><i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span></a>
         <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> <span class="menu-text">Profile</span></a>
         <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
         <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span></a>
@@ -45,7 +46,7 @@ $current_user = $_SESSION['user']['username'] ?? $_SESSION['name'] ?? 'User';
     <header class="content-header d-flex align-items-center justify-content-between mb-4">
         <div>
             <h2 class="fw-semibold">Eisenhower Matrix</h2>
-            <p class="subtitle text-muted">Organize tasks by urgency and importance</p>
+            <p class="subtitle">Organize tasks by urgency and importance</p>
         </div>
     </header>
 
