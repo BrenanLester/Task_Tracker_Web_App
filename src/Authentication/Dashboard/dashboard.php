@@ -39,8 +39,9 @@ $calendar_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DebugMyDay - Dashboard</title>
+  <title>Dashboard</title>
   
+  <link rel="stylesheet" href="../../reusable.css">
   <link rel="stylesheet" href="dashboard.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
@@ -50,81 +51,84 @@ $calendar_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
-  <!-- SIDEBAR -->
-<div class="sidebar">
-    <h5 class="fw-bold mb-4">DebugMyDay</h5>
+  <div class="sidebar" id="app-nav">
+    <div class="nav-header d-flex justify-content-between align-items-center">
+        <h5 class="app-title">DebugMyDay</h5>
+        <button id="menu-toggle" class="btn btn-sm text-white d-block d-md-none" type="button">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+    </div>
 
-    <a class="menu-item active" href="dashboard.php">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
+    <nav>
+      <a class="menu-item active" href="dashboard.php">
+          <i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span>
+      </a>
 
-    <a class="menu-item" href="../Tasks/tasks.php">
-        <i class="bi bi-list-check"></i> Tasks
-    </a>
+      <a class="menu-item" href="../Tasks/tasks.php">
+          <i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span>
+      </a>
 
-    <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> Profile</a>
-    <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> Pomodoro Timer</a>
-    <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> Settings</a>
-    <a class="menu-item" href="../About/about.php"><i class="bi bi-info-circle"></i> About Us</a>
-
-    <a class="menu-item" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> <span class="menu-text">Profile</span></a>
+      <a class="menu-item" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
+      <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span></a>
+      <a class="menu-item" href="../About/about.php"><i class="bi bi-info-circle"></i> <span class="menu-text">About Us</span></a>
+    </nav>
+    
+    <a class="menu-item" href="#"><i class="bi bi-box-arrow-right"></i> <span class="menu-text">Logout</span></a>
 </div>
 
-  <!-- Main Content -->
-  <div class="app-content">
-    <h2 class="fw-semibold">Hello, <?php echo htmlspecialchars($user_name); ?>! 👋</h2>
+  <div class="app-content p-4 p-md-5">
+    <h2 class="fw-semibold">Hello, [Username Here]! 👋</h2>
     <p class="text-muted">Here's your productivity overview</p>
 
     <div class="row mt-3 g-3">
       <div class="col-md-4">
         <div class="card-metric">
           <h6>Total Tasks</h6>
-          <h2 class="fw-bold"><?php echo $stats['total_tasks'] ?? 0; ?></h2>
+          <h2 class="fw-bold">—</h2>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="card-metric">
           <h6>Pending Tasks</h6>
-          <h2 class="fw-bold text-warning"><?php echo $stats['pending_tasks'] ?? 0; ?></h2>
+          <h2 class="fw-bold text-warning">—</h2>
         </div>
       </div>
 
       <div class="col-md-4">
         <div class="card-metric">
           <h6>Completed Tasks</h6>
-          <h2 class="fw-bold text-success"><?php echo $stats['completed_tasks'] ?? 0; ?></h2>
+          <h2 class="fw-bold text-success">—</h2>
         </div>
       </div>
     </div>
 
     <div class="row mt-4 g-4">
+      
       <div class="col-lg-6">
-        <div class="card-box">
-          <h5 class="mb-3">Recent Task To Do</h5>
-          <?php if (empty($recent_tasks)): ?>
-            <p class="text-muted text-center py-4">No recent activity. <a href="../Tasks/tasks.php">Create your first task!</a></p>
-          <?php else: ?>
-            <?php foreach ($recent_tasks as $task): ?>
-              <div class="activity-item">
-                <div class="task-title"><?php echo htmlspecialchars($task['title']); ?></div>
-                <div class="task-meta">
-                  <span class="priority-badge priority-<?php echo strtolower($task['priority']); ?>">
-                    <?php echo htmlspecialchars($task['priority']); ?>
-                  </span>
-                  <span class="status-badge status-<?php echo strtolower(str_replace(' ', '-', $task['status'])); ?>">
-                    <?php echo htmlspecialchars($task['status']); ?>
-                  </span>
-                  <?php if ($task['due_date']): ?>
-                    <span class="ms-2"><i class="bi bi-calendar"></i> <?php echo htmlspecialchars($task['due_date']); ?></span>
-                  <?php endif; ?>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+        <div class="activity-box card-box">
+          <h5 class="mb-3">Recently added tasks</h5>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-success"><i class="bi bi-check-circle-fill me-2"></i> Task "Design Mockup" accomplished.</span>
+                <span class="badge bg-success rounded-pill">5m ago</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-primary"><i class="bi bi-plus-circle-fill me-2"></i> New task "Test Payment Gateway" created.</span>
+                <span class="badge bg-primary rounded-pill">2h ago</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-warning"><i class="bi bi-arrow-clockwise me-2"></i> Task "Database Setup" moved to Pending.</span>
+                <span class="badge bg-warning rounded-pill">Today</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="text-secondary"><i class="bi bi-stopwatch-fill me-2"></i> Pomodoro session finished (25m).</span>
+                <span class="badge bg-secondary rounded-pill">3h ago</span>
+            </li>
+          </ul>
         </div>
       </div>
-
       <div class="col-lg-6">
         <div class="card-box minimalist-calendar-container">
           
@@ -161,13 +165,13 @@ $calendar_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
           
         </div>
       </div>
-    </div>
+      </div>
   </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   
-  <script src="dashboard.js"></script>
-  <script src="../Shared/audioPlayer.js"></script>
+  <script src="../About/about.js"></script> 
+  <script src="dashboard.js"></script> 
 
 </body>
 </html>

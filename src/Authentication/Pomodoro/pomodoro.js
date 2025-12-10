@@ -1,4 +1,3 @@
-// Only run this JS if Pomodoro elements exist
 const display = document.getElementById("timeDisplay");
 if (!display) {
     // Clear any leftover Pomodoro state from other pages
@@ -19,6 +18,51 @@ if (!display) {
     const alarm = document.getElementById("alarmSound");
     const musicSelect = document.getElementById("bgMusicSelect");
     let bgPlayer = null;
+
+    // --- MOBILE MENU LOGIC FIX ---
+    const sidebar = document.getElementById('app-nav');
+    const menuToggle = document.getElementById('menu-toggle');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const body = document.body;
+
+    // Function to open the sidebar
+    function openSidebar() {
+        // Check if on a mobile screen size (matches the CSS @media query)
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add('nav-open');
+            body.classList.add('nav-open'); // Needed for the blur effect
+            backdrop.classList.add('show');
+        }
+    }
+
+    // Function to close the sidebar
+    function closeSidebar() {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('nav-open');
+            body.classList.remove('nav-open');
+            backdrop.classList.remove('show');
+        }
+    }
+   document.addEventListener("DOMContentLoaded", function () {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+    }
+});
+    // Event listener to open the sidebar (by clicking the burger icon)
+    if (menuToggle) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents the click from triggering the backdrop listener immediately
+            openSidebar();
+        });
+    }
+    
+
+    if (backdrop) {
+        backdrop.addEventListener('click', closeSidebar);
+    }
+  
+
 
     // Initialize Pomodoro only if on this page
     function initState() {
@@ -54,6 +98,7 @@ if (!display) {
         const file = musicSelect.value;
         localStorage.setItem('selectedMusic', file);
 
+        // NOTE:yung path ng ng audio, pakilagay sa mismong file
         if (!bgPlayer) {
             bgPlayer = new Audio('../../../sounds/' + file);
             bgPlayer.loop = true;
@@ -79,7 +124,17 @@ if (!display) {
                     "Long Break";
 
         document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("active"));
-        event.target.classList.add("active");
+        // Safely determine which mode button to activate
+        // The global 'event' is used here because setMode is called via inline HTML onclick
+        const clickedButton = event ? event.target.closest('.mode-btn') : null;
+        if (clickedButton) {
+            clickedButton.classList.add("active");
+        } else {
+            // Fallback for initialization or direct calls
+            const defaultButton = document.querySelector(`.mode-btn[onclick*="'${mode}'"]`);
+            if (defaultButton) defaultButton.classList.add("active");
+        }
+
 
         if (bgPlayer) {
             bgPlayer.pause();
@@ -89,7 +144,13 @@ if (!display) {
 
         updateDisplay();
         updateStartButton();
+        
+        // Closes the sidebar after a menu item is clicked on mobile
+        closeSidebar(); 
     }
+    
+    // Attach setMode globally since it's used in HTML onclick attributes
+    window.setMode = setMode;
 
     function updateStartButton() {
         const btn = document.getElementById('startBtn');

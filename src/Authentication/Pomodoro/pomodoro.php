@@ -12,21 +12,17 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pomodoro Timer - DebugMyDay</title>
 
-<!-- Page CSS -->
+<link rel="stylesheet" href="../../reusable.css">
 <link rel="stylesheet" href="pomodoro.css">
 
-<!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar" id="app-nav">
     <div class="nav-header d-flex justify-content-between align-items-center">
         <h5 class="app-title">DebugMyDay</h5>
@@ -39,21 +35,20 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
         <a class="menu-item" href="../Dashboard/dashboard.php"><i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span></a>
         <a class="menu-item" href="../Tasks/tasks.php"><i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span></a>
         <a class="menu-item" href="../profile.php"><i class="bi bi-person-circle"></i> <span class="menu-text">Profile</span></a>
-        <a class="menu-item active" href="pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
+        <a class="menu-item active" href="../Pomodoro/pomodoro.php"><i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span></a>
         <a class="menu-item" href="../Setting/setting.php"><i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span></a>
         <a class="menu-item" href="../About/about.php"><i class="bi bi-info-circle"></i> <span class="menu-text">About Us</span></a>
-    </nav>
+    </nav>                              
 
     <a class="menu-item" href="../logout.php">
         <i class="bi bi-box-arrow-right"></i> <span class="menu-text">Logout</span>
     </a>
 </div>
 
-<!-- MAIN CONTENT -->
 <div class="app-content p-4 p-md-5">
     <header class="content-header d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="page-title fs-4 fw-bold">Pomodoro Timer</h1>
+            <h1 class="page-title">Pomodoro Timer</h1>
             <p class="page-sub text-muted fs-6">Stay focused with the Pomodoro Technique</p>
         </div>
     </header>
@@ -61,7 +56,6 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
     <div class="pomo-card">
         <h2>Timer</h2>
 
-        <!-- Modes -->
         <div class="pomo-modes">
             <button class="mode-btn active" onclick="setMode('work', 25)">
                 <i class="bi bi-clock"></i> Work (25m)
@@ -74,11 +68,9 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
             </button>
         </div>
 
-        <!-- Timer -->
         <div class="timer-display" id="timeDisplay">25:00</div>
         <p class="focus-label" id="sessionLabel">Focus Time</p>
 
-        <!-- Controls -->
         <div class="pomo-controls">
             <button type="button" class="start-btn" id="startBtn">
                 <i class="bi bi-play-fill"></i> Start
@@ -88,7 +80,6 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
             </button>
         </div>
 
-        <!-- Music Selector -->
         <div class="music-selector mb-3">
             <label for="bgMusicSelect" class="form-label fw-semibold">Background Music:</label>
             <select id="bgMusicSelect" class="form-select">
@@ -99,13 +90,13 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
         </div>
     </div>
 
-    <!-- Alarm -->
     <audio id="alarmSound">
         <source src="https://files.catbox.moe/ojr5ha.mp3" type="audio/mp3">
     </audio>
 </div>
 
-<!-- JS -->
+<div class="backdrop" id="sidebar-backdrop"></div>
+
 <script src="pomodoro.js"></script>
 
 </body>

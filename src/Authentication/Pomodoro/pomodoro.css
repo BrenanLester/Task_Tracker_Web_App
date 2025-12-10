@@ -1,11 +1,5 @@
-/* GENERAL */
-body {
-  background-color: #f6f2fc;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-}
 
-/* SIDEBAR — SAME AS DASHBOARD */
+/* SIDEBAR - same code */
 .sidebar {
   width: 260px;
   background-color: #3b1366;
@@ -18,86 +12,108 @@ body {
   flex-direction: column;
   padding: 25px 20px;
   transition: .28s ease;
+  z-index: 1051; 
 }
 
 .nav-header .app-title {
   font-size: 22px;
   font-weight: 700;
 }
-
-.menu-item {
-  padding: 12px 18px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-  color: #e7dfff;
-  text-decoration: none;
-  transition: .25s;
-}
-
-.menu-item.active {
-  background-color: #6d28d9;
-  color: #fff;
-}
-
-.menu-item:hover {
-  background-color: #7626db;
-  color: white;
-}
-
 .sidebar .menu-item:last-child {
   margin-top: auto;
 }
 
-/* MOBILE SIDEBAR */
+/* MOBILE BACKDROP & BLUR EFFECT */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1050;
+  display: none; 
+}
+
+.backdrop.show {
+  display: block;
+}
+
+/* blur*/
+body.nav-open .app-content {
+    filter: blur(5px);
+    pointer-events: none; 
+}
+
+/* ITU RESPONSIVENESS CODE PARA MAAYOS DN NA MAHGTOGGLE */
 @media (max-width: 768px) {
-
-  .sidebar {
-    width: 70px;
-    padding: 16px 0;
+  /* Default  */
+  .sidebar { 
+    width: 70px; 
+    padding: 16px 0; 
   }
 
-  .sidebar .app-title {
+  .sidebar .nav-header { 
+    justify-content: center !important;
+    padding-bottom: 24px;
+  }
+  
+  /* pag close*/
+  .sidebar #menu-toggle { 
+    display: block !important; 
+  }
+  
+  .sidebar .app-title { 
     display: none;
   }
-
-  .menu-item {
+  
+  .menu-item { 
     justify-content: center;
+    padding: 12px 0;
+  }
+  
+  .menu-item .menu-text { 
+    display: none; 
   }
 
-  .menu-text {
-    display: none;
+  /* pag open */
+  .sidebar.nav-open { 
+    width: 260px; 
+    padding: 24px 16px; 
   }
 
-  .sidebar.nav-open {
-    width: 260px;
-    padding: 25px;
-    z-index: 1200;
+  .sidebar.nav-open .nav-header { 
+    justify-content: space-between !important;
   }
 
-  .sidebar.nav-open .menu-text {
+  .sidebar.nav-open .app-title { 
+    display: block; 
+  }
+
+  .sidebar.nav-open .menu-item { 
+    justify-content: flex-start;
+    padding: 10px 16px;
+  }
+
+  .sidebar.nav-open .menu-item .menu-text { 
     display: inline;
   }
-
-  .sidebar.nav-open .app-title {
-    display: block;
+  
+  
+  .sidebar.nav-open #menu-toggle {
+    display: none !important;
   }
-
-  .app-content.nav-pushed {
-    margin-left: 260px;
-  }
-
+  
+ 
   .app-content {
-    margin-left: 70px !important;
+    margin-left: 70px !important; 
   }
 }
 
 /* CONTENT */
 .app-content {
-  margin-left: 260px;
-  transition: margin-left .28s;
+  margin-left: 260px; 
+  transition: margin-left .28s, filter .28s ease; 
 }
 
 .pomo-card {
@@ -108,6 +124,11 @@ body {
   margin: 30px auto 40px auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   text-align: center;
+}
+
+.pomo-card h2 {
+    color: #3b1366; 
+    font-weight: 600;
 }
 
 .pomo-modes {
@@ -124,23 +145,33 @@ body {
   border-radius: 10px;
   color: #5e3aac;
   transition: .2s ease;
+  cursor: pointer; 
 }
 
 .mode-btn.active {
   background: #8b32ff;
   color: white;
+  border-color: #8b32ff; 
 }
 
 .timer-display {
   font-size: 80px;
   font-weight: 700;
   color: #8b32ff;
+  margin: 10px 0; 
+}
+
+.focus-label {
+    font-size: 1.2em;
+    color: #5e3aac;
+    margin-bottom: 25px;
 }
 
 .pomo-controls {
   display: flex;
   justify-content: center;
   gap: 20px;
+  margin-bottom: 30px; 
 }
 
 .start-btn {
@@ -150,6 +181,12 @@ body {
   border-radius: 10px;
   color: white;
   cursor: pointer;
+  font-weight: 500; 
+  font-size: 1.1em; 
+}
+
+.start-btn i {
+    margin-right: 5px;
 }
 
 .reset-btn {
@@ -157,11 +194,55 @@ body {
   background: white;
   border-radius: 10px;
   border: 1px solid #d8cfff;
+  color: #5e3aac; 
   cursor: pointer;
+  font-weight: 500; 
+  font-size: 1.1em; 
+}
+
+.reset-btn i {
+    margin-right: 5px;
 }
 
 .music-selector {
   width: 60%;
+  max-width: 350px; 
   margin: 0 auto;
   text-align: left;
+}
+
+.music-selector .form-select {
+    border-radius: 10px;
+    border-color: #d8cfff;
+}
+
+@media (max-width: 992px) {
+    .pomo-card {
+        width: 85%;
+    }
+}
+
+@media (max-width: 576px) {
+    .pomo-card {
+        width: 100%;
+        padding: 25px 15px;
+    }
+
+    .pomo-modes {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .pomo-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .start-btn, .reset-btn {
+        width: 100%;
+    }
+
+    .music-selector {
+        width: 90%;
+    }
 }

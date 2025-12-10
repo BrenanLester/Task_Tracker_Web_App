@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				if ($referer && stripos($referer, 'logout.php') === false) {
 						header('Location: ' . $referer);
 				} else {
-						header('Location: ./Dashboard/dashboard.php');
+						header('Location: ../Dashboard/dashboard.php');
 				}
 				exit;
 		}
@@ -32,22 +32,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Confirm Logout</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 	<style>
-		body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:#f7fafc; }
-		.confirm-box { background: #fff; padding: 24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.06); max-width:420px; width:100%; }
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		html, body { height: 100%; width: 100%; }
+		body { font-family: 'Poppins', sans-serif; overflow: hidden; }
+		.backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; filter: blur(8px); z-index: 1; }
+		.modal-wrapper { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; }
+		.confirm-box { background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); max-width: 420px; width: 100%; }
+		.confirm-box h5 { color: #1a202c; margin-bottom: 12px; }
+		.confirm-box p { color: #718096; font-size: 14px; margin-bottom: 24px; }
 	</style>
 </head>
 <body>
-	<div class="confirm-box">
-		<h5 class="mb-3">Are you sure you want to logout?</h5>
-		<p class="text-muted">You will be returned to the landing page if you confirm.</p>
+	<iframe class="backdrop" id="bgFrame" style="border:none; pointer-events:none;" src="./Dashboard/dashboard.php"></iframe>
+	
+	<div class="modal-wrapper">
+		<div class="confirm-box">
+			<h5 class="mb-3">Are you sure you want to logout?</h5>
+			<p class="text-muted">You will be returned to the landing page if you confirm.</p>
 
-		<form method="post">
-			<div class="d-flex gap-2">
-				<button type="submit" name="confirm" value="yes" class="btn btn-danger">Yes</button>
-				<button type="submit" name="confirm" value="no" class="btn btn-secondary">No</button>
-			</div>
-		</form>
+			<form method="post">
+				<div class="d-flex gap-2">
+					<button type="submit" name="confirm" value="yes" class="btn btn-danger">Yes</button>
+					<button type="submit" name="confirm" value="no" class="btn btn-secondary">No</button>
+				</div>
+			</form>
+		</div>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
