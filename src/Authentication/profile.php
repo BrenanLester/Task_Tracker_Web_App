@@ -546,27 +546,27 @@ body.dark .delete-confirm {
         </div>
         
         <nav>
-            <a class="menu-item" href="../Dashboard/dashboard.php">
+            <a class="menu-item" href="Dashboard/dashboard.php">
                 <i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span>
             </a>
-            <a class="menu-item" href="../Tasks/tasks.php">
+            <a class="menu-item" href="Tasks/tasks.php">
                 <i class="bi bi-list-check"></i> <span class="menu-text">Tasks</span>
             </a>
-            <a class="menu-item active" href="../profile.php">
+            <a class="menu-item active" href="profile.php">
                 <i class="bi bi-person-circle"></i> <span class="menu-text">Profile</span>
             </a>
-            <a class="menu-item" href="../Pomodoro/pomodoro.php">
+            <a class="menu-item" href="Pomodoro/pomodoro.php">
                 <i class="bi bi-stopwatch"></i> <span class="menu-text">Pomodoro Timer</span>
             </a>
-            <a class="menu-item" href="../Setting/setting.php">
+            <a class="menu-item" href="Setting/setting.php">
                 <i class="bi bi-gear-fill"></i> <span class="menu-text">Settings</span>
             </a>
-            <a class="menu-item" href="../About/about.php">
+            <a class="menu-item" href="About/about.php">
                 <i class="bi bi-info-circle"></i> <span class="menu-text">About Us</span>
             </a>
         </nav>
         
-        <a class="menu-item" href="../logout.php">
+        <a class="menu-item" href="logout.php">
             <i class="bi bi-box-arrow-right"></i> <span class="menu-text">Logout</span>
         </a>
     </div>
@@ -712,6 +712,6 @@ body.dark .delete-confirm {
             }
         });
     </script>
-    <script src="../Shared/audioPlayer.js"></script>
+    <script src="Shared/audioPlayer.js"></script>
 </body>
 </html>
