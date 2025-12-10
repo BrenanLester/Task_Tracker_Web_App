@@ -37,38 +37,79 @@ function showNoTasksMessage(quadrantId) {
 }
 
 function loadTasks() {
-  const tasks = getTasksFromStorage();
-  
-  Object.keys(quadrantNames).forEach(q => {
-    const el = document.getElementById(q);
-    if (el) el.innerHTML = '';
-  });
+  // Load tasks from database
+  fetch('/Task_Tracker_Web_App/src/CRUD/Task.php?action=list')
+    .then(response => response.json())
+    .then(data => {
+      // Clear all quadrants
+      Object.keys(quadrantNames).forEach(q => {
+        const el = document.getElementById(q);
+        if (el) el.innerHTML = '';
+      });
 
-  // Set taskIdCounter higher than any existing ID
-  const maxId = tasks.reduce((max, t) => Math.max(max, parseInt(t.id.split('-')[1] || 0)), 0);
-  taskIdCounter = maxId;
+      if (data.success && data.tasks) {
+        // Display tasks from database
+        data.tasks.forEach(t => {
+          const quadrant = t.quadrant || 'others';
+          const list = document.getElementById(quadrant);
+          if (!list) return;
 
-  tasks.forEach(t => {
-    const list = document.getElementById(t.quadrant || 'others');
-    if (!list) return;
+          const noTasksMsg = list.querySelector('.no-tasks');
+          if (noTasksMsg) noTasksMsg.remove();
+          
+          const task = document.createElement('div');
+          task.className = 'task';
+          task.id = 'task-' + t.task_id;
+          task.dataset.title = t.title;
+          task.dataset.description = t.description || '';
+          task.dataset.subject = t.subject || '';
+          task.dataset.quadrant = quadrant;
+          task.dataset.dbId = t.task_id;
+          task.dataset.completed = t.status === 'Completed' ? 'true' : 'false';
 
-    const noTasksMsg = list.querySelector('.no-tasks');
-    if (noTasksMsg) noTasksMsg.remove();
-    
-    const task = document.createElement('div');
-    task.className = 'task';
-    task.id = t.id;
-    task.dataset.title = t.title;
-    task.dataset.description = t.description || '';
-    task.dataset.subject = t.subject || '';
-    task.dataset.quadrant = t.quadrant || 'others';
-    task.dataset.completed = t.completed ? 'true' : 'false';
+          task.innerHTML = createTaskHTML('task-' + t.task_id, t.title, t.description || '', t.subject || '', t.status === 'Completed');
+          list.appendChild(task);
+        });
+      }
 
-    task.innerHTML = createTaskHTML(t.id, t.title, t.description || '', t.subject || '', t.completed);
-    list.appendChild(task);
-  });
-  
-  Object.keys(quadrantNames).forEach(showNoTasksMessage);
+      // Show "no tasks" message for empty quadrants
+      Object.keys(quadrantNames).forEach(showNoTasksMessage);
+    })
+    .catch(error => {
+      console.error('Error loading tasks:', error);
+      // Fallback to localStorage
+      const tasks = getTasksFromStorage();
+      
+      Object.keys(quadrantNames).forEach(q => {
+        const el = document.getElementById(q);
+        if (el) el.innerHTML = '';
+      });
+
+      const maxId = tasks.reduce((max, t) => Math.max(max, parseInt(t.id.split('-')[1] || 0)), 0);
+      taskIdCounter = maxId;
+
+      tasks.forEach(t => {
+        const list = document.getElementById(t.quadrant || 'others');
+        if (!list) return;
+
+        const noTasksMsg = list.querySelector('.no-tasks');
+        if (noTasksMsg) noTasksMsg.remove();
+        
+        const task = document.createElement('div');
+        task.className = 'task';
+        task.id = t.id;
+        task.dataset.title = t.title;
+        task.dataset.description = t.description || '';
+        task.dataset.subject = t.subject || '';
+        task.dataset.quadrant = t.quadrant || 'others';
+        task.dataset.completed = t.completed ? 'true' : 'false';
+
+        task.innerHTML = createTaskHTML(t.id, t.title, t.description || '', t.subject || '', t.completed);
+        list.appendChild(task);
+      });
+      
+      Object.keys(quadrantNames).forEach(showNoTasksMessage);
+    });
 }
 
 
@@ -121,41 +162,61 @@ function addTask() {
     return;
   }
 
-  const list = document.getElementById(currentQuadrant);
+  // Create FormData to send to backend
+  const formData = new FormData();
+  formData.append('action', 'create');
+  formData.append('title', taskTitle);
+  formData.append('description', taskDescription);
+  formData.append('quadrant', currentQuadrant);
+  formData.append('subject', taskSubject);
+  formData.append('priority', 'Medium');
+  formData.append('status', 'Pending');
 
-  const noTasksMsg = list.querySelector('.no-tasks');
-  if (noTasksMsg) {
-    noTasksMsg.remove();
-  }
+  // Send to backend - use absolute path
+  fetch('/Task_Tracker_Web_App/src/CRUD/Task.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Task creation response:', data);
+    if (data.success) {
+      // Add to UI
+      const list = document.getElementById(currentQuadrant);
+      const noTasksMsg = list.querySelector('.no-tasks');
+      if (noTasksMsg) {
+        noTasksMsg.remove();
+      }
 
-  taskIdCounter++;
-  const taskId = `task-${taskIdCounter}`;
+      const taskId = 'task-' + data.id;
+      const task = document.createElement("div");
+      task.className = "task";
+      task.id = taskId;
+      task.dataset.title = taskTitle;
+      task.dataset.description = taskDescription;
+      task.dataset.subject = taskSubject;
+      task.dataset.quadrant = currentQuadrant;
+      task.dataset.dbId = data.id;
+      task.dataset.completed = "false";
 
-  const task = document.createElement("div");
-  task.className = "task";
-  task.id = taskId;
-  task.dataset.title = taskTitle;
-  task.dataset.description = taskDescription;
-  task.dataset.subject = taskSubject;
-  task.dataset.quadrant = currentQuadrant;
-  task.dataset.completed = "false";
+      task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
+      list.appendChild(task);
 
-  task.innerHTML = createTaskHTML(taskId, taskTitle, taskDescription, taskSubject, false);
-  list.appendChild(task);
-
-  closeModal();
-  showNotification('Task added successfully', 'success'); 
-
-  const tasks = getTasksFromStorage();
-  tasks.push({
-    id: taskId,
-    title: taskTitle,
-    description: taskDescription,
-    subject: taskSubject,
-    quadrant: currentQuadrant,
-    completed: false
+      closeModal();
+      showNotification('Task added successfully', 'success');
+    } else {
+      showNotification('Error: ' + (data.message || 'Failed to add task'), 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showNotification('Error adding task: ' + error.message, 'error');
   });
-  saveTasksToStorage(tasks);
 }
 
 function createTaskHTML(taskId, title, description, subject, completed) {
@@ -187,27 +248,68 @@ function createTaskHTML(taskId, title, description, subject, completed) {
 function toggleComplete(taskId) {
   const task = document.getElementById(taskId);
   let isCompleted = task.dataset.completed === "true";
-
   isCompleted = !isCompleted;
-  task.dataset.completed = isCompleted ? "true" : "false";
-
-  const titleElement = task.querySelector('.task-title');
-  if (isCompleted) {
-    titleElement.classList.add('completed');
-  } else {
-    titleElement.classList.remove('completed');
-  }
   
-  const tasks = getTasksFromStorage();
-  const taskIndex = tasks.findIndex(t => t.id === taskId);
-  if (taskIndex !== -1) {
-    tasks[taskIndex].completed = isCompleted;
-    saveTasksToStorage(tasks);
-    
+  const dbId = task.dataset.dbId;
+
+  // If we have a database ID, update in database
+  if (dbId) {
+    const formData = new FormData();
+    formData.append('action', 'update');
+    formData.append('id', dbId);
+    formData.append('status', isCompleted ? 'Completed' : 'Pending');
+
+    fetch('/Task_Tracker_Web_App/src/CRUD/Task.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        task.dataset.completed = isCompleted ? "true" : "false";
+
+        const titleElement = task.querySelector('.task-title');
+        if (isCompleted) {
+          titleElement.classList.add('completed');
+        } else {
+          titleElement.classList.remove('completed');
+        }
+
+        if (isCompleted) {
+          showNotification("Task marked complete", 'success');
+        } else {
+          showNotification("Task marked incomplete", 'error');
+        }
+      } else {
+        showNotification('Error: ' + (data.message || 'Failed to update task'), 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error updating task', 'error');
+    });
+  } else {
+    // Fallback for localStorage-only tasks
+    task.dataset.completed = isCompleted ? "true" : "false";
+
+    const titleElement = task.querySelector('.task-title');
     if (isCompleted) {
-        showNotification("Task marked complete", 'success');
+      titleElement.classList.add('completed');
     } else {
+      titleElement.classList.remove('completed');
+    }
+    
+    const tasks = getTasksFromStorage();
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      tasks[taskIndex].completed = isCompleted;
+      saveTasksToStorage(tasks);
+      
+      if (isCompleted) {
+        showNotification("Task marked complete", 'success');
+      } else {
         showNotification("Task marked incomplete", 'error');
+      }
     }
   }
 }
@@ -245,23 +347,59 @@ function updateTask() {
 
   const task = document.getElementById(editingTaskId);
   const completed = task.dataset.completed === "true";
+  const dbId = task.dataset.dbId;
 
-  task.dataset.title = taskTitle;
-  task.dataset.description = taskDescription;
-  task.dataset.subject = taskSubject;
+  // If we have a database ID, update in database
+  if (dbId) {
+    const formData = new FormData();
+    formData.append('action', 'update');
+    formData.append('id', dbId);
+    formData.append('title', taskTitle);
+    formData.append('description', taskDescription);
+    formData.append('subject', taskSubject);
 
-  task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
+    fetch('/Task_Tracker_Web_App/src/CRUD/Task.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        task.dataset.title = taskTitle;
+        task.dataset.description = taskDescription;
+        task.dataset.subject = taskSubject;
 
-  closeModal();
-  showNotification("Task updated successfully", 'info'); 
-  
-  const tasks = getTasksFromStorage();
-  const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
-  if (taskIndex !== -1) {
-    tasks[taskIndex].title = taskTitle;
-    tasks[taskIndex].description = taskDescription;
-    tasks[taskIndex].subject = taskSubject;
-    saveTasksToStorage(tasks);
+        task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
+
+        closeModal();
+        showNotification("Task updated successfully", 'info');
+      } else {
+        showNotification('Error: ' + (data.message || 'Failed to update task'), 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error updating task', 'error');
+    });
+  } else {
+    // Fallback for localStorage-only tasks
+    task.dataset.title = taskTitle;
+    task.dataset.description = taskDescription;
+    task.dataset.subject = taskSubject;
+
+    task.innerHTML = createTaskHTML(editingTaskId, taskTitle, taskDescription, taskSubject, completed);
+
+    closeModal();
+    showNotification("Task updated successfully", 'info'); 
+    
+    const tasks = getTasksFromStorage();
+    const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+    if (taskIndex !== -1) {
+      tasks[taskIndex].title = taskTitle;
+      tasks[taskIndex].description = taskDescription;
+      tasks[taskIndex].subject = taskSubject;
+      saveTasksToStorage(tasks);
+    }
   }
 }
 
@@ -271,15 +409,41 @@ function deleteTask(taskId) {
   }
 
   const task = document.getElementById(taskId);
+  const dbId = task.dataset.dbId;
   const quadrant = task.dataset.quadrant;
 
-  task.remove();
+  // If we have a database ID, delete from database
+  if (dbId) {
+    const formData = new FormData();
+    formData.append('action', 'delete');
+    formData.append('id', dbId);
 
-  showNoTasksMessage(quadrant);
-  showNotification("Task deleted", 'error'); 
-  
-  const tasks = getTasksFromStorage().filter(t => t.id !== taskId);
-  saveTasksToStorage(tasks);
+    fetch('/Task_Tracker_Web_App/src/CRUD/Task.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        task.remove();
+        showNoTasksMessage(quadrant);
+        showNotification("Task deleted", 'error');
+      } else {
+        showNotification('Error deleting task: ' + (data.message || 'Unknown error'), 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showNotification('Error deleting task', 'error');
+    });
+  } else {
+    // Fallback for localStorage-only tasks
+    task.remove();
+    showNoTasksMessage(quadrant);
+    showNotification("Task deleted", 'error');
+    const tasks = getTasksFromStorage().filter(t => t.id !== taskId);
+    saveTasksToStorage(tasks);
+  }
 }
 
 function showNotification(message, type = 'success') {

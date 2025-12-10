@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pomodoro Timer - DebugMyDay</title>
 
-<link rel="stylesheet" href="../../reusable.css">
+<link rel="stylesheet" href="../../../reusable.css">
 <link rel="stylesheet" href="pomodoro.css">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />

@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				if ($referer && stripos($referer, 'logout.php') === false) {
 						header('Location: ' . $referer);
 				} else {
-						header('Location: ../Dashboard/dashboard.php');
+						header('Location: Dashboard/dashboard.php');
 				}
 				exit;
 		}

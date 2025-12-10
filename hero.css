@@ -424,6 +424,7 @@ footer {
         align-items: center;
         gap: 1rem; 
         z-index: auto;
+        background-color: transparent;
     }
     
   

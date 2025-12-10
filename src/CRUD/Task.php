@@ -47,6 +47,7 @@ try {
         case 'store':
             $title = trim($_POST['title'] ?? '');
             $description = trim($_POST['description'] ?? '');
+            $subject = trim($_POST['subject'] ?? '');
             $priority = $_POST['priority'] ?? 'Medium';
             $due_date = $_POST['due_date'] ?: null;
             $quadrant = $_POST['quadrant'] ?? 'others';
@@ -57,10 +58,10 @@ try {
             }
 
             $stmt = $pdo->prepare(
-                'INSERT INTO tasks (user_id, title, description, priority, due_date, quadrant, status) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+                'INSERT INTO tasks (user_id, title, description, subject, priority, due_date, quadrant, status) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
             );
-            $stmt->execute([$current_user_id, $title, $description, $priority, $due_date, $quadrant, $status]);
+            $stmt->execute([$current_user_id, $title, $description, $subject, $priority, $due_date, $quadrant, $status]);
             
             echo json_encode([
                 'success' => true,
@@ -107,12 +108,13 @@ try {
             $id = (int)($_POST['id'] ?? 0);
             $title = trim($_POST['title'] ?? '');
             $description = trim($_POST['description'] ?? '');
+            $subject = trim($_POST['subject'] ?? '');
             $priority = $_POST['priority'] ?? 'Medium';
             $due_date = $_POST['due_date'] ?: null;
             $quadrant = $_POST['quadrant'] ?? 'others';
             $status = $_POST['status'] ?? 'Pending';
 
-            if ($id <= 0 || !$title) {
+            if ($id <= 0) {
                 throw new Exception('Invalid task data');
             }
 
@@ -127,10 +129,10 @@ try {
             }
 
             $stmt = $pdo->prepare(
-                'UPDATE tasks SET title = ?, description = ?, priority = ?, due_date = ?, quadrant = ?, status = ?, updated_at = CURRENT_TIMESTAMP 
+                'UPDATE tasks SET title = ?, description = ?, subject = ?, priority = ?, due_date = ?, quadrant = ?, status = ?, updated_at = CURRENT_TIMESTAMP 
                  WHERE task_id = ?'
             );
-            $stmt->execute([$title, $description, $priority, $due_date, $quadrant, $status, $id]);
+            $stmt->execute([$title, $description, $subject, $priority, $due_date, $quadrant, $status, $id]);
 
             echo json_encode(['success' => true, 'message' => 'Task updated successfully']);
             break;

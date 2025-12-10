@@ -1,4 +1,12 @@
+// dashboard.js
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. THEME CHECKER: Checks localStorage and applies 'dark' class if needed
+    const savedTheme = localStorage.getItem("theme") || "light";
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+    }
 
     const timeDisplay = document.getElementById('current-time');
     const fullDateDisplay = document.getElementById('current-full-date');
@@ -33,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fullDateDisplay.textContent = now.toLocaleDateString('en-US', dateOptions);
         setTimeout(updateDateTime, 1000);
     }
-
+    
+    // --- Calendar Generation Function ---
     function generateCalendar(date) {
         const year = date.getFullYear();
         const month = date.getMonth(); // 0-11
@@ -49,22 +58,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const startingDayOfWeek = firstDayOfMonth.getDay(); 
         const daysInMonth = new Date(year, month + 1, 0).getDate(); 
 
+        // Clear existing day numbers, keeping the day labels (first 7 children)
         while (calendarGrid.children.length > 7) {
             calendarGrid.removeChild(calendarGrid.lastChild);
         }
 
+        // Add blank days
         for (let i = 0; i < startingDayOfWeek; i++) {
             const blankDay = document.createElement('div');
             blankDay.className = 'blank-day'; 
             calendarGrid.appendChild(blankDay);
         }
 
+        // Add day numbers
         for (let day = 1; day <= daysInMonth; day++) {
             const dayElement = document.createElement('div');
             dayElement.className = 'day-number';
             dayElement.textContent = day;
 
-          
+            // Highlight the current day
             if (isCurrentMonth && day === currentDayOfMonth) {
                 dayElement.classList.add('active-day');
             }
@@ -72,59 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
             calendarGrid.appendChild(dayElement);
         }
     }
-
-  
-     document.addEventListener("DOMContentLoaded", function () {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    if (savedTheme === "dark") {
-        document.body.classList.add("dark");
-    }
-});
- 
+    
+    // --- Navigation Listeners ---
     prevMonthBtn.addEventListener('click', () => {
         currentDisplayDate.setMonth(currentDisplayDate.getMonth() - 1);
         generateCalendar(currentDisplayDate);
     });
-
+    
 
     nextMonthBtn.addEventListener('click', () => {
         currentDisplayDate.setMonth(currentDisplayDate.getMonth() + 1);
         generateCalendar(currentDisplayDate);
     });
 
-
+    // --- Initial Function Calls ---
     updateDateTime();
     generateCalendar(currentDisplayDate);
 });
-
-      const appNav = document.getElementById('app-nav');
-      const menuToggle = document.getElementById('menu-toggle');
-      const appContent = document.querySelector('.app-content');
-      const appFooter = document.querySelector('.footer');
-
-    // Helper function to toggle the classes
-    const toggleMenu = () => {
-        appNav.classList.toggle('nav-open');
-        appContent.classList.toggle('blur-content');
-        appFooter.classList.toggle('blur-content');
-    };
-
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleMenu);
-    }
-    
-    if (appContent) {
-        appContent.addEventListener('click', (event) => {
-            if (appNav.classList.contains('nav-open') && event.currentTarget.classList.contains('blur-content')) {
-                toggleMenu();
-            }
-        });
-    }
-
-    if (appFooter) {
-        appFooter.addEventListener('click', (event) => {
-            if (appNav.classList.contains('nav-open') && event.currentTarget.classList.contains('blur-content')) {
-                toggleMenu();
-            }
-        });
-    }
