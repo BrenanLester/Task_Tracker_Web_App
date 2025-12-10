@@ -159,8 +159,8 @@ form {
 
 .container p {
     font-size: 14.5px;
-    margin: 15px 0;
-    color: var(--pp-text);
+    margin: 14px 0;
+    color: var(--pp-white);
 }
 
 .social-icons {
