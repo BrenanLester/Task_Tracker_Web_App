@@ -174,15 +174,6 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
     
 </div>
 
-<footer class="footer p-4 p-md-3">
-    <div class="footer-wrapper d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <p>&copy; 2025 DebugMyDay. All rights reserved.</p>
-        <p class="footer-nav">
-            <a href="#" class="text-decoration-none mx-2">Privacy Policy</a> | 
-            <a href="#" class="text-decoration-none mx-2">Terms of Service</a>
-        </p>
-    </div>
-</footer>
 
   <script src="about.js"></script>
   <script src="../Shared/audioPlayer.js"></script>
