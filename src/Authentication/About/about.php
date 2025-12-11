@@ -159,7 +159,7 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['user'])) {
                         <div class="col-12 col-md-6 col-lg-4">
                             <div class="member-profile rounded-1 shadow-sm d-flex flex-column h-100 mx-auto profile-shrink-mobile">
                                 <div class="profile-photo-wrapper position-relative overflow-hidden">
-                                    <img src="" class="profile-photo" alt="Winston Gultiano">
+                                    <img src="/Task_Tracker_Web_App/Photo/Winston.png" class="profile-photo" alt="Winston Gultiano">
                                 </div>
                                 <div class="profile-details text-start p-3">
                                     <span class="member-role d-block fw-semibold mb-1">JavaScript & Validation Specialist</span>

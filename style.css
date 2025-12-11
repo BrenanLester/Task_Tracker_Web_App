@@ -331,3 +331,16 @@ form {
         font-size: 30px;
     }
 }
+
+.form-error,
+.form-success {
+    font-size: 14px;
+    line-height: 1.2;
+}
+.form-error {
+    text-align: center;
+    color: #d953f4;
+}
+.form-success {
+    color: #28a745
+}

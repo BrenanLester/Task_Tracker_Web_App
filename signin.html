@@ -17,7 +17,7 @@
             <form id="loginForm" action="src/Authentication/login.php" method="POST">
                 <h1>Login</h1>
                 <div class="input-box">
-                    <input id="login-username" name="email" type="text" placeholder="Username" required>
+                    <input id="login-email" name="email" type="email" placeholder="Email" required>
                     <i class='bx bxs-user'></i>
                 </div>
                 <div class="input-box">
@@ -28,13 +28,21 @@
                     <a href="#">Forgot password?</a>
                 </div>
                 <button id="loginBtn" type="submit" class="btn">Login</button>
-                <p class="form-note">or login with social platforms</p>
+                <!--<p class="form-note">or login with social platforms</p>
                 <div class="social-icons">
-                    <a href="https://accounts.google.com/" target="_blank"><i class='bx bxl-google'></i></a>
-                    <a href="https://www.facebook.com/login.php" target="_blank"><i class='bx bxl-facebook'></i></a>
-                    <a href="https://github.com/login" target="_blank"><i class='bx bxl-github'></i></a>
-                    <a href="https://www.linkedin.com/login" target="_blank"><i class='bx bxl-linkedin'></i></a>
-                </div>
+                    <a href="https://accounts.google.com/" target="_blank">
+                        <i class='bx bxl-google'></i>
+                    </a>
+                    <a href="https://www.facebook.com/login.php" target="_blank">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="https://github.com/login" target="_blank">
+                        <i class='bx bxl-github'></i>
+                    </a>
+                    <a href="https://www.linkedin.com/login" target="_blank">
+                        <i class='bx bxl-linkedin'></i>
+                    </a>
+                </div>-->
             </form>
         </div>
 
@@ -42,7 +50,7 @@
             <form id="registerForm" action="src/Authentication/register.php" method="POST">
                 <h1>Registration</h1>
                 <div class="input-box">
-                    <input id="reg-username" name="name" type="text" placeholder="Username" required>
+                    <input id="reg-name" name="name" type="text" placeholder="Username" required>
                     <i class='bx bxs-user'></i>
                 </div>
                 <div class="input-box">
@@ -56,10 +64,18 @@
                 <button id="regBtn" type="submit" class="btn">Register</button>
                 <p class="form-note">or register with social platforms</p>
                 <div class="social-icons">
-                    <a href="https://accounts.google.com/" target="_blank"><i class='bx bxl-google'></i></a>
-                    <a href="https://www.facebook.com/login.php" target="_blank"><i class='bx bxl-facebook'></i></a>
-                    <a href="https://github.com/login" target="_blank"><i class='bx bxl-github'></i></a>
-                    <a href="https://www.linkedin.com/login" target="_blank"><i class='bx bxl-linkedin'></i></a>
+                    <a href="https://accounts.google.com/" target="_blank">
+                        <i class='bx bxl-google'></i>
+                    </a>
+                    <a href="https://www.facebook.com/login.php" target="_blank">
+                        <i class='bx bxl-facebook'></i>
+                    </a>
+                    <a href="https://github.com/login" target="_blank">
+                        <i class='bx bxl-github'></i>
+                    </a>
+                    <a href="https://www.linkedin.com/login" target="_blank">
+                        <i class='bx bxl-linkedin'></i>
+                    </a>
                 </div>
             </form>
         </div>
@@ -77,7 +93,7 @@
             </div>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
     <script>
         // Display error or success message if present in URL
@@ -89,10 +105,19 @@
             const loginForm = document.getElementById('loginForm');
             const errorDiv = document.createElement('p');
             errorDiv.style.color = 'red';
-            errorDiv.style.marginBottom = '10px';
-            errorDiv.style.textAlign = 'center';
+            errorDiv.style.margin = '0 0 32px 0';
+            errorDiv.className = 'form-error';
             errorDiv.textContent = error;
-            loginForm.insertBefore(errorDiv, loginForm.firstChild.nextSibling);
+
+            // Insert error right below the password field for clearer context
+            const pwdInput = document.getElementById('login-password');
+            if (pwdInput && pwdInput.parentElement) {
+                const pwdWrapper = pwdInput.parentElement; // .input-box
+                pwdWrapper.parentNode.insertBefore(errorDiv, pwdWrapper.nextSibling);
+            } else {
+                // fallback: insert near the top of the form
+                loginForm.insertBefore(errorDiv, loginForm.firstChild.nextSibling);
+            }
 
             // Remove error from URL without reloading
             window.history.replaceState({}, document.title, window.location.pathname);
@@ -102,10 +127,17 @@
             const loginForm = document.getElementById('loginForm');
             const successDiv = document.createElement('p');
             successDiv.style.color = 'green';
-            successDiv.style.marginBottom = '10px';
-            successDiv.style.textAlign = 'center';
+            successDiv.style.margin = '8px 0 12px';
+            successDiv.className = 'form-success';
             successDiv.textContent = success;
-            loginForm.insertBefore(successDiv, loginForm.firstChild.nextSibling);
+
+            const pwdInput = document.getElementById('login-password');
+            if (pwdInput && pwdInput.parentElement) {
+                const pwdWrapper = pwdInput.parentElement;
+                pwdWrapper.parentNode.insertBefore(successDiv, pwdWrapper.nextSibling);
+            } else {
+                loginForm.insertBefore(successDiv, loginForm.firstChild.nextSibling);
+            }
 
             // Remove success from URL without reloading
             window.history.replaceState({}, document.title, window.location.pathname);
